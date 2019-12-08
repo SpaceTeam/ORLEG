@@ -1,0 +1,77 @@
+
+
+         NASA-GLENN CHEMICAL EQUILIBRIUM PROGRAM CEA2, FEBRUARY 5, 2004
+                   BY  BONNIE MCBRIDE AND SANFORD GORDON
+      REFS: NASA RP-1311, PART I, 1994 AND NASA RP-1311, PART II, 1996
+
+ *******************************************************************************
+
+  
+ prob case=as156505 ro equilibrium ions
+  
+  ! iac problem
+ o/f 2.4
+ p,bar  25
+ reac
+  fuel  C2H5OH(L) wt%=100 t,k=298.15
+   oxid  N2O wt%=100.  t,k=298.15
+ output    short
+ output trace=1e-5
+ end
+
+              THEORETICAL ROCKET PERFORMANCE ASSUMING EQUILIBRIUM
+
+           COMPOSITION DURING EXPANSION FROM INFINITE AREA COMBUSTOR
+
+ Pin =   362.6 PSIA
+ CASE = as156505       
+
+             REACTANT                    WT FRACTION      ENERGY      TEMP
+                                          (SEE NOTE)     KJ/KG-MOL      K  
+ FUEL        C2H5OH(L)                    1.0000000   -277510.001    298.150
+ OXIDANT     N2O                          1.0000000     82050.000    298.150
+
+ O/F=    2.40000  %FUEL= 29.411765  R,EQ.RATIO= 1.993113  PHI,EQ.RATIO= 2.388446
+
+                 CHAMBER   THROAT
+ Pinf/P            1.0000   1.8107
+ P, BAR            25.000   13.807
+ T, K             2257.93  1998.27
+ RHO, KG/CU M    2.7755 0 1.7325 0
+ H, KJ/KG         -455.80  -959.26
+ U, KJ/KG        -1356.53 -1756.16
+ G, KJ/KG        -25710.0 -23309.3
+ S, KJ/(KG)(K)    11.1847  11.1847
+
+ M, (1/n)          20.843   20.849
+ (dLV/dLP)t      -1.00024 -1.00008
+ (dLV/dLT)p        1.0053   1.0016
+ Cp, KJ/(KG)(K)    1.9773   1.9175
+ GAMMAs            1.2558   1.2636
+ SON VEL,M/SEC     1063.5   1003.5
+ MACH NUMBER        0.000    1.000
+
+ PERFORMANCE PARAMETERS
+
+ Ae/At                      1.0000
+ CSTAR, M/SEC               1438.0
+ CF                         0.6978
+ Ivac, M/SEC                1797.6
+ Isp, M/SEC                 1003.5
+
+ MOLE FRACTIONS
+
+ *CO             2.3444-1 2.3050-1
+ *CO2            3.1684-2 3.5706-2
+ *H              7.4360-4 2.0939-4
+ *H2             2.2931-1 2.3363-1
+ H2O             1.6943-1 1.6555-1
+ NH3             2.2002-5 1.8307-5
+ *N2             3.3426-1 3.3437-1
+ *OH             9.2931-5 1.6684-5
+
+  * THERMODYNAMIC PROPERTIES FITTED TO 20000.K
+
+ NOTE. WEIGHT FRACTION OF FUEL IN TOTAL FUELS AND OF OXIDANT IN TOTAL OXIDANTS
+
+  

@@ -14,7 +14,7 @@ sw = {'H2O': 2.3579 * 10 ** -1, 'CO2': 5.5019 * 10 ** -2, 'CO': 1.7712 * 10 ** -
 # Data input choice ('F' for File, 'M' for Manual)
 datainput = 'F'
 # Name of CEA data input file (CEA-Settings: T in Kelvin, P in Bar, Mole Fractions)
-ceainput = 'ceainput.txt'
+ceainput = 'inputFiles/ceainput.txt'
 # Input definition ('mole' for mole fraction, 'mass' for massfraction)
 ratioflag = 'mole'
 # Mixture Ratio (O/F Mass)
@@ -48,7 +48,7 @@ cells = 50  # Nodimension
 # INPUT DATA PROCESSING
 
 # Name of OpenRocket output file
-inputfile = "pressuredata.csv"
+inputfile = "inputFiles/pressuredata.csv"
 # Data Strip Factor (Rawdatapoints/Outputdatapoints)
 stripfactor = 15
 
@@ -82,9 +82,9 @@ cf = 'l'
 # OUTPUT DATA PROCESSING
 
 # Output File Name
-outputfile = 'Siegfried_fat.rse'
+outputfile = 'outputFiles/Amalia.rse'
 # Rocket Engine Name
-Enginename = 'Siegfried_fat'
+Enginename = 'Amalia'
 # Producer
 Prod = 'TXV'
 # Displayed System Diameter
