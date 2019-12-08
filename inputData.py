@@ -2,7 +2,7 @@ import numpy as np
 import ceaDataReader as cd
 from CoolProp.CoolProp import PropsSI as ps
 
-# ENGINE GENERATOR INPUT FILE
+# ENGINE GENERATOR INPUT FILE TODO: separate data from functions below
 
 # NOZZLE INPUT DATA (Exhaust gas composition and Chamber Temperature can be calculatet with NASA CEA)
 
