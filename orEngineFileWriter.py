@@ -1,27 +1,27 @@
-import inputData as data
+from inputFiles import parameters
 
 
 def writeEngineFile(mdot, isp, Thav, Thmax, ltot, mtot, mdry, tlist, cglist, thrustlist, masslist):  #TODO: write to string first and then single file write
-	with open(data.outputfile, "w") as file:
+	with open(parameters.outputfile, "w") as file:
 		file.write('<engine-database>')
 		file.write('\n  <engine-list>')
 		file.write('\n    <engine  ')
-		file.write('mfg="' + str(data.Prod) + '" ')
-		file.write('code="' + str(data.Enginename) + '" ')
+		file.write('mfg="' + str(parameters.Prod) + '" ')
+		file.write('code="' + str(parameters.Enginename) + '" ')
 		file.write('Type="Liquid" ')
-		file.write('dia="' + str(int(data.Ddis * 1000)) + '" ')
+		file.write('dia="' + str(int(parameters.Ddis * 1000)) + '" ')
 		file.write('len="' + str(int(ltot * 1000)) + '" ')
 		file.write('initWt="' + str(int(mtot * 1000)) + '" ')
 		file.write('propWt="' + str(int((mtot - mdry) * 1000)) + '" ')
 		file.write('delays="0" ')
-		file.write('auto-calc-mass="' + str(data.am) + '" ')
+		file.write('auto-calc-mass="' + str(parameters.am) + '" ')
 		file.write('auto-calc-cg="0" ')
 		file.write('avgThrust="' + str(Thav) + '" ')
 		file.write('peakThrust="' + str(Thmax) + '" ')
 		file.write('throatDia="0" ')
 		file.write('exitDia="' + str(0 * 1000) + '" ')
-		file.write('Itot="' + str((mdot * data.burntime) * isp * 9.81) + '" ')
-		file.write('burn-time="' + str(data.burntime) + '" ')
+		file.write('Itot="' + str((mdot * parameters.burntime) * isp * 9.81) + '" ')
+		file.write('burn-time="' + str(parameters.burntime) + '" ')
 		file.write('massFrac="0" ')
 		file.write('Isp="' + str(isp) + '" ')
 		file.write('tDiv="10" ')

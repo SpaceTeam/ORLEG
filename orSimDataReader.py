@@ -1,9 +1,9 @@
-import inputData as vs
+from inputFiles import parameters
 
 
 # OpenRocket simulation data processing
 def readORSimData():
-	with open(vs.inputfile, "r") as file:
+	with open(parameters.inputfile, "r") as file:
 		tr = []
 		apr = []
 		hr = []
@@ -20,8 +20,8 @@ def readORSimData():
 			hval = float(data[1])
 			hr.append(hval)  # altitude list input
 			tval = float(data[0])
-			if tval >= vs.burntime > tvpre:
-				tr.append(vs.burntime)  # final input rounded to given burntime, values are cut off at burnout
+			if tval >= parameters.burntime > tvpre:
+				tr.append(parameters.burntime)  # final input rounded to given burntime, values are cut off at burnout
 				break
 			else:
 				tr.append(tval)  # timestamp list input
@@ -40,21 +40,21 @@ def readORSimData():
 	hl.append(hs)
 	count = 0  # timestamp strip
 	for i in tr:
-		if count == vs.stripfactor:
+		if count == parameters.stripfactor:
 			tl.append(i)
 			count = 0
 		else:
 			count += 1
 	count = 0  # pressure strip
 	for i in apr:
-		if count == vs.stripfactor:
+		if count == parameters.stripfactor:
 			apl.append(i)
 			count = 0
 		else:
 			count += 1
 	count = 0  # altitude strip
 	for i in hr:
-		if count == vs.stripfactor:
+		if count == parameters.stripfactor:
 			hl.append(i)
 			count = 0
 		else:
@@ -67,7 +67,7 @@ def readORSimData():
 	tl.append(te)
 	apl.append(pre)
 	hl.append(he)
-	hn = vs.overexp * hl[-1]
+	hn = parameters.overexp * hl[-1]
 	hpre = 0
 	for n, i in enumerate(hl):
 		if i >= hn > hpre:
