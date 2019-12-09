@@ -1,53 +1,39 @@
 from inputFiles import parameters
-import ceaDataReader as cd
-import numpy as np
-from CoolProp.CoolProp import PropsSI as ps
-
-
-# Calculation of fuel tank mass per length TODO: implement diy aluminium tanks
-def calculateTankMassPerLength(d):
-	wvref = parameters.mtlref / parameters.rhoc
-	twref = (parameters.dtref / 2) - np.sqrt(((parameters.dtref * 0.5) ** 2) - wvref / np.pi)
-	ws = parameters.Ptanko * parameters.dtref / (2 * twref)
-	t = parameters.Ptanko * d / (2 * ws)
-	Dt = d + 2 * t
-	A = np.pi * ((Dt / 2) ** 2 - (d / 2) ** 2)
-	mtl = A * parameters.rhoc
-	return mtl
+import ceaDataReader
+from CoolProp.CoolProp import PropsSI
 
 
 # Check if the sum of the exhaust gas fraction is close enough to 1
 def checkExhaustComposition():
-	count = 0
-	for key in parameters.sw:
-		count += parameters.sw[key]
-	if not 1 + 0.008 > count > 1 - 0.008:
-		print('NOTE! derivation of exhaust fraction from one out of boundaries!', count)
+	fractionSum = 0
+	for key in parameters.exhaustComposition:
+		fractionSum += parameters.exhaustComposition[key]
+	if abs(fractionSum - 1) > 0.008:
+		print('WARNING! exhaust fraction sum out of boundaries:', fractionSum)
 
 
 # If required, convert exhaust composition from mole to mass fractions
 def convertMoleToMass():
-	if parameters.ratioflag == 'mass':
-		print('Conversion Complete! Input Parameters=', parameters.ratioflag)
-	elif parameters.ratioflag == 'mole':
-		mm = 0
-		for key in parameters.sw:
-			mm += parameters.sw[key] * ps('molarmass', 'P', 200, 'T', 200, key)
-		for key in parameters.sw:
-			parameters.sw[key] = parameters.sw[key] * ps('molarmass', 'P', 200, 'T', 200, key) / mm
-		print('Conversion Complete! Input Parameters=', parameters.ratioflag)
+	if parameters.exhaustCompositionRatioType == 'mass':
+		pass
+	elif parameters.exhaustCompositionRatioType == 'mole':
+		molarMassSum = 0
+		for key in parameters.exhaustComposition:
+			molarMassSum += parameters.exhaustComposition[key] * PropsSI('molarmass', 'P', 200, 'T', 200, key)
+		for key in parameters.exhaustComposition:
+			parameters.exhaustComposition[key] = parameters.exhaustComposition[key] * PropsSI('molarmass', 'P', 200, 'T', 200, key) / molarMassSum
 	else:
-		print("ERROR! Wrong Conversion Input")
+		print('ERROR! Invalid setting for parameter exhaustCompositionRatioType')
 
 
+# Process input data, calls functions above
 def processInputData():
-	if parameters.datainput == 'F':
-		parameters.Tch, parameters.sw, parameters.Pch = cd.readCea(parameters.ceainput)
-	elif parameters.datainput == 'M':
-		None
+	if parameters.ceaDataSource == 'F':
+		parameters.chamberTemperature, parameters.exhaustComposition, parameters.chamberPressure = ceaDataReader.readCea(parameters.ceaDataFileName)
+	elif parameters.ceaDataSource == 'M':
+		pass
 	else:
-		print('invalid value for "datainput"')
+		print('ERROR! Invalid setting for parameter ceaDataSource')
 
 	checkExhaustComposition()
 	convertMoleToMass()
-	return calculateTankMassPerLength(parameters.dt)

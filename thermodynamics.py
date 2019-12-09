@@ -2,29 +2,27 @@ from inputFiles import parameters
 from CoolProp.CoolProp import PropsSI as ps
 
 
-# Ideal Gas Constant
-def Rgas():
+# Ideal gas constant
+def idealGasConstant():
 	rval = 0
-	for key in parameters.sw:
-		rval += parameters.sw[key] / ps('molarmass', 'P', 200, 'T', 200, key)
-	R = 8.344598 * rval
-	return R
+	for key in parameters.exhaustComposition:
+		rval += parameters.exhaustComposition[key] / ps('molarmass', 'P', 200, 'T', 200, key)
+	return 8.344598 * rval
 
 
 # Specific thermal enthalpy
-def hgas(T, P):
-	hval = 0
-	for key in parameters.sw:
-		hval += parameters.sw[key] * ps('H', 'P', P, 'T', T, key)
-	return hval
+def specificThermalEnthalpy(T, P):
+	ste = 0
+	for key in parameters.exhaustComposition:
+		ste += parameters.exhaustComposition[key] * ps('H', 'P', P, 'T', T, key)
+	return ste
 
 
 # Specific heats ratio
-def kgas(T, P):
+def specificHeatsRatio(T, P):
 	cpval = 0
 	cvval = 0
-	for key in parameters.sw:
-		cpval += parameters.sw[key] * ps('C', 'P', P, 'T', T, key)
-		cvval += parameters.sw[key] * ps('CVMASS', 'P', P, 'T', T, key)
-	kappa = cpval / cvval
-	return kappa
+	for key in parameters.exhaustComposition:
+		cpval += parameters.exhaustComposition[key] * ps('C', 'P', P, 'T', T, key)
+		cvval += parameters.exhaustComposition[key] * ps('CVMASS', 'P', P, 'T', T, key)
+	return cpval / cvval

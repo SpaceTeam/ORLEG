@@ -3,60 +3,58 @@ import thermodynamics as th
 import numpy as np
 
 
-# Isentropic Flow Equation (Kappa Upwind)
-def entropy(T1, p2, p1):
-	T2 = T1 * (p2 / p1) ** ((th.kgas(T1, p1) - 1) / (th.kgas(T1, p1)))
-	return T2
+# Isentropic Flow Equation (Kappa Upwind), returns T2
+def calculateTemperatureIsentropicFlow(T1, p2, p1):
+	return T1 * (p2 / p1) ** ((th.specificHeatsRatio(T1, p1) - 1) / (th.specificHeatsRatio(T1, p1)))
 
 
-# Conservation of energy
-def energy(T1, v1, p1, T2, p2):
-	v2 = np.sqrt(2 * ((0.5 * v1 ** 2) + th.hgas(T1, p1) - th.hgas(T2, p2)))
-	return v2
+# Conservation of energy, returns v2
+def calculateVelocityConservationOfEnergy(T1, v1, p1, T2, p2):
+	return np.sqrt(2 * ((0.5 * v1 ** 2) + th.specificThermalEnthalpy(T1, p1) - th.specificThermalEnthalpy(T2, p2)))
 
 
 # Density
-def dens(p2, T2):
-	rho2 = p2 / (th.Rgas() * T2)
-	return rho2
+def calculateDensity(p2, T2):
+	return p2 / (th.idealGasConstant() * T2)
 
 
 # Diameter
-def area(T2, p2, v2, rho2, mdot):
-	area = mdot / (rho2 * v2)
-	return area
+def calculateExitArea(T2, p2, v2, rho2, massFlowRate):
+	return massFlowRate / (rho2 * v2)
 
 
-def simulate(Pu):
-	# Definition of Pressure-Steps and initialisation of Valuedict
-	dp = (parameters.Pch - Pu) / parameters.cells
-	# Definition of Initial Conditions
-	T1 = parameters.Tch
-	p1 = parameters.Pch
-	v1 = parameters.vch
-	while p1 > 1.01 * Pu:
-		p2 = p1 - dp
-		T2 = entropy(T1, p2, p1)
-		v2 = energy(T1, v1, p1, T2, p2)
+def simulate(refAmbientPressure):
+	# Definition of pressure step size
+	pressureStep = (parameters.chamberPressure - refAmbientPressure) / parameters.nozzleSimCellCount
+	# Definition of initial conditions (temperature, pressure, velocity)
+	T1 = T2 = parameters.chamberTemperature
+	p1 = p2 = parameters.chamberPressure
+	v1 = v2 = parameters.chamberVelocity
+	# Expand down to ambient pressure
+	while p1 > 1.01 * refAmbientPressure:
+		p2 = p1 - pressureStep
+		T2 = calculateTemperatureIsentropicFlow(T1, p2, p1)
+		v2 = calculateVelocityConservationOfEnergy(T1, v1, p1, T2, p2)
 		T1 = T2
 		p1 = p2
 		v1 = v2
-	v2 = v2 * parameters.ispkor
-	isp = v2 / 9.81
-	rhoe = dens(p2, T2)
-	mdot = parameters.Thrust / (v2 + (p2 - parameters.Ps) / (rhoe * v2))  # mass flow calculated for input thrust at ground level (overexpanding engine)
-	Ae = area(T2, p2, v2, rhoe, mdot)
-	Fopt = mdot * v2
+	# Calculate with values after expansion
+	v2 = v2 * parameters.ispCorrectionFactor
+	specificImpulse = v2 / 9.81
+	density = calculateDensity(p2, T2)
+	massFlowRate = parameters.seaLevelThrust / (v2 + (p2 - parameters.ambientPressure) / (density * v2))  # mass flow calculated for input thrust at ground level (overexpanding engine)
+	exitArea = calculateExitArea(T2, p2, v2, density, massFlowRate)
+	refThrust = massFlowRate * v2
 	print("Engine Simulation Successful")
-	return mdot, isp, Ae, Fopt
+	return massFlowRate, specificImpulse, exitArea, refThrust
 
 
 # calculation of engine thrust curve due to altitude compensation (According to Huzel/Huang Page 2)
-def calcThrustAltComp(Pu, Plist, Fopt, Ae):
-	Thl = []
-	for i in Plist:
-		val = Fopt + Ae * (Pu - i)
-		Thl.append(val)
-	Thmax = Thl[-1]
-	Thav = (Thl[0] + Thl[-1]) / 2
-	return Thl, Thav, Thmax
+def calcThrustAltComp(refAmbientPressure, ambientPressureList, optimalThrust, exitArea):
+	thrustList = []
+	for i in ambientPressureList:
+		val = optimalThrust + exitArea * (refAmbientPressure - i)
+		thrustList.append(val)
+	maximumThrust = thrustList[-1]
+	averageThrust = (thrustList[0] + thrustList[-1]) / 2
+	return thrustList, averageThrust, maximumThrust

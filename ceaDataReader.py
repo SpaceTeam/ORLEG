@@ -30,4 +30,4 @@ def readCea(filename):
 			if b == 2:
 				if a[0] == 'MOLE' and a[1] == 'FRACTIONS':
 					switch = 1
-		return Tcomb, compdict, Pcomb
+	return Tcomb, compdict, Pcomb

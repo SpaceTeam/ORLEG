@@ -7,9 +7,9 @@ import tankCGCalculator
 import orEngineFileWriter
 
 
-mpl = inputDataProcessing.processInputData()
-pval, tlist, plist = orSimDataReader.readORSimData()
-mdot, isp, area, fopt = engineSim.simulate(pval)
-thrl, thra, thrm = engineSim.calcThrustAltComp(pval, plist, fopt, area)
-cgl, mlist, ltot, ml, mdry = tankCGCalculator.calculateTankCG(mdot, tlist, mpl)
-orEngineFileWriter.writeEngineFile(mdot, isp, thra, thrm, ltot, ml, mdry, tlist, cgl, thrl, mlist)
+inputDataProcessing.processInputData()
+refAmbientPressure, timestampList, ambientPressureList = orSimDataReader.readORSimData()
+massFlowRate, specificImpulse, exitArea, refThrust = engineSim.simulate(refAmbientPressure)
+thrustList, averageThrust, maximumThrust = engineSim.calcThrustAltComp(refAmbientPressure, ambientPressureList, refThrust, exitArea)
+cgList, propellantMassList, tankLength, wetMass, dryMass = tankCGCalculator.calculateTankCG(massFlowRate, timestampList)
+orEngineFileWriter.writeEngineFile(massFlowRate, specificImpulse, averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList)

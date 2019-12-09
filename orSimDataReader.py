@@ -3,12 +3,12 @@ from inputFiles import parameters
 
 # OpenRocket simulation data processing
 def readORSimData():
-	with open(parameters.inputfile, "r") as file:
+	with open(parameters.orDataFileName, "r") as file:
 		tr = []
 		apr = []
 		hr = []
-		tl = []
-		apl = []
+		timestampList = []
+		ambientPressureList = []
 		hl = []
 		tvpre = 0
 		# Extraction of Burntime, Pressure and Heigth from OR-Simulation File
@@ -20,8 +20,8 @@ def readORSimData():
 			hval = float(data[1])
 			hr.append(hval)  # altitude list input
 			tval = float(data[0])
-			if tval >= parameters.burntime > tvpre:
-				tr.append(parameters.burntime)  # final input rounded to given burntime, values are cut off at burnout
+			if tval >= parameters.burnDuration > tvpre:
+				tr.append(parameters.burnDuration)  # final input rounded to given burntime, values are cut off at burnout
 				break
 			else:
 				tr.append(tval)  # timestamp list input
@@ -35,26 +35,26 @@ def readORSimData():
 	pre = apr.pop(-1)
 	he = hr.pop(-1)
 	# first list value input
-	tl.append(ts)
-	apl.append(prs)
+	timestampList.append(ts)
+	ambientPressureList.append(prs)
 	hl.append(hs)
 	count = 0  # timestamp strip
 	for i in tr:
-		if count == parameters.stripfactor:
-			tl.append(i)
+		if count == parameters.orDataStripFactor:
+			timestampList.append(i)
 			count = 0
 		else:
 			count += 1
 	count = 0  # pressure strip
 	for i in apr:
-		if count == parameters.stripfactor:
-			apl.append(i)
+		if count == parameters.orDataStripFactor:
+			ambientPressureList.append(i)
 			count = 0
 		else:
 			count += 1
 	count = 0  # altitude strip
 	for i in hr:
-		if count == parameters.stripfactor:
+		if count == parameters.orDataStripFactor:
 			hl.append(i)
 			count = 0
 		else:
@@ -64,18 +64,18 @@ def readORSimData():
 	apr = None
 	hr = None
 	# ending list value input
-	tl.append(te)
-	apl.append(pre)
+	timestampList.append(te)
+	ambientPressureList.append(pre)
 	hl.append(he)
-	hn = parameters.overexp * hl[-1]
+	hn = parameters.overexpansionRatio * hl[-1]
 	hpre = 0
 	for n, i in enumerate(hl):
 		if i >= hn > hpre:
-			a = apl[n]
-			b = apl[n - 1]
-			pn = (a + b) / 2
+			a = ambientPressureList[n]
+			b = ambientPressureList[n - 1]
+			refAmbientPressure = (a + b) / 2
 			break
 		else:
 			hpre = i
 	hl = None
-	return pn, tl, apl
+	return refAmbientPressure, timestampList, ambientPressureList
