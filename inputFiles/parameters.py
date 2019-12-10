@@ -1,6 +1,6 @@
-# ENGINE GENERATOR INPUT FILE
-
-# NOZZLE INPUT DATA (Exhaust gas composition and Chamber Temperature can be calculated with NASA CEA)
+########################################################################################################################
+# Engine Parameters (Exhaust gas composition and Chamber Temperature can be calculated with NASA CEA)
+########################################################################################################################
 
 # Data input choice ('F' for File, 'M' for Manual)
 ceaDataSource = 'F'
@@ -45,46 +45,70 @@ chamberVelocity = 40  # m/s
 # Ispcorrection (1 for standard, scaling factor in case of reduced isp)
 ispCorrectionFactor = 1
 
-# NOZZLE SIMULATION SETUP
-
-# Cell Numbers
+# Nozzle Simulation Cell Numbers
 nozzleSimCellCount = 50  # Nodimension
 
-# INPUT DATA PROCESSING
 
-# Name of OpenRocket output file
-orDataFileName = "inputFiles/pressuredata.csv"
-# Data Strip Factor (Rawdatapoints/Outputdatapoints)
-orDataStripFactor = 15
+########################################################################################################################
+# Tank Parameters
+########################################################################################################################
 
-# CGDETERMINATION
-# Tankdiameter
+# Tank Diameter
 tankDiameter = 0.20  # m
-# Tankstructuremass per unit length for reference diameter
-refTankMassPerLength = 2.5  # kg/m
-# Referencediameter
-referenceTankDiameter = 0.20
+
+# Tank Mass Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax)
+massArrangement = (1, 3.5, 'O', 'F', 3.5)  # kg
+# Tank Length Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax)
+lengthArrangement = (0.41, 0.3, 'O', 'F', 0.3)  # m
+
+# Tank type ('c' for carbon, 'a' for aluminium)
+tankType = 'c'
+
+# Reference Carbon Tank Diameter
+referenceCarbonTankDiameter = 0.20  # m
+# Reference Carbon Tank mass per length
+referenceCarbonTankMassPerLength = 2.5  # kg/m
 # Density Carbon
-densityCarbon = 1600  # kg/m^3
+carbonDensity = 1600  # kg/m^3
+
+# Aluminium Tank Endcap Mass
+aluminiumTankEndcapMass = 0.2  # kg
+# Aluminium Yield Strength
+aluminiumYieldStrength = 310 * 10 ** 6  # Pa
+# Density Aluminium
+aluminiumDensity = 2700  # kg/m^3
+# Aluminium Tank Safety Factor
+aluminiumTankSafetyFactor = 1.5
+
 # Dead Propellant Mass Fraction
 deadFuelMassFraction = 0.05
 # Dead Oxidiser Mass Fraction
 deadOxidizerMassFraction = 0.05
-# Systemarrangement mass (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax)
-massArrangement = (1, 3.5, 'O', 'F', 3.5)  # kg
-# Systemarrangement length (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax)
-lengthArrangement = (0.41, 0.3, 'O', 'F', 0.3)  # m
+# Dead Propellant Conditions ('g' for gaseous,'l' for liquid)
+deadOxidizerState = 'g'
+deadFuelState = 'l'
+
 # Propellant Storage Conditions
 fuelTankTemperature = 25 + 273.15  # K
 fuelTankPressure = 30 * 10 ** 5  # Pa
 oxidizerTankTemperature = 25 + 273.15  # K
 oxidizerTankPressure = 50 * 10 ** 5  # Pa
 oxidizerTankGasFraction = 0
-# Deadpropellantcondition ('g' for gaseous,'l' for liquid)
-deadOxidizerState = 'g'
-deadFuelState = 'l'
 
-# OUTPUT DATA PROCESSING
+
+########################################################################################################################
+# Input Data Settings
+########################################################################################################################
+
+# Name of OpenRocket output file
+orDataFileName = "inputFiles/pressuredata.csv"
+# Data Strip Factor (Rawdatapoints/Outputdatapoints)
+orDataStripFactor = 15
+
+
+########################################################################################################################
+# Output Data Settings
+########################################################################################################################
 
 # Output File Name
 engineFileName = 'outputFiles/Amalia.rse'
@@ -94,5 +118,5 @@ engineName = 'Amalia'
 engineManufacturer = 'TXV'
 # Displayed System Diameter
 displayedSystemDiameter = 0.1  # m
-# Autocalcmass
+# Automatic Mass Calculation
 automaticMassCalculation = 0

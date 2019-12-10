@@ -23,7 +23,7 @@ def calculateExitArea(T2, p2, v2, rho2, massFlowRate):
 	return massFlowRate / (rho2 * v2)
 
 
-def simulate(refAmbientPressure):
+def simulateEngine(refAmbientPressure):
 	# Definition of pressure step size
 	pressureStep = (parameters.chamberPressure - refAmbientPressure) / parameters.nozzleSimCellCount
 	# Definition of initial conditions (temperature, pressure, velocity)
@@ -52,8 +52,8 @@ def simulate(refAmbientPressure):
 # calculation of engine thrust curve due to altitude compensation (According to Huzel/Huang Page 2)
 def calcThrustAltComp(refAmbientPressure, ambientPressureList, optimalThrust, exitArea):
 	thrustList = []
-	for i in ambientPressureList:
-		val = optimalThrust + exitArea * (refAmbientPressure - i)
+	for ambientPressure in ambientPressureList:
+		val = optimalThrust + exitArea * (refAmbientPressure - ambientPressure)
 		thrustList.append(val)
 	maximumThrust = thrustList[-1]
 	averageThrust = (thrustList[0] + thrustList[-1]) / 2
