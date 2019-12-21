@@ -37,9 +37,9 @@ ambientPressure = 10 ** 5  # Pa
 overexpansionRatio = 0.333
 
 # Engine Thrust at ambient pressure
-seaLevelThrust = 5000  # N
+seaLevelThrust = 500  # N
 # Burntime
-burnDuration = 30  # s
+burnDuration = 8  # s
 # Combustion Chamber Velocity
 chamberVelocity = 40  # m/s
 # Ispcorrection (1 for standard, scaling factor in case of reduced isp)
@@ -54,15 +54,15 @@ nozzleSimCellCount = 50  # Nodimension
 ########################################################################################################################
 
 # Tank Diameter
-tankDiameter = 0.20  # m
+tankDiameter = 0.09  # m
 
-# Tank Mass Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax)
-massArrangement = (1, 3.5, 'O', 'F', 3.5)  # kg
-# Tank Length Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax)
-lengthArrangement = (0.41, 0.3, 'O', 'F', 0.3)  # m
+# Tank (and other stuff) Mass Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, mass in kg for other)
+massArrangement = (2, 'O', 0.9, 'F', 0.8)  # kg
+# Tank (and other stuff) Length Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, length in m for other)
+lengthArrangement = (0.3, 'O', 0.35, 'F', 0.3)  # m
 
 # Tank type ('c' for carbon, 'a' for aluminium)
-tankType = 'c'
+tankType = 'a'
 
 # Reference Carbon Tank Diameter
 referenceCarbonTankDiameter = 0.20  # m
@@ -72,15 +72,17 @@ referenceCarbonTankMassPerLength = 2.5  # kg/m
 carbonDensity = 1600  # kg/m^3
 
 # Aluminium Tank Endcap Mass
-aluminiumTankEndcapMass = 0.2  # kg
+aluminiumTankEndcapMass = 0.25  # kg
 # Aluminium Yield Strength
 aluminiumYieldStrength = 310 * 10 ** 6  # Pa
 # Density Aluminium
-aluminiumDensity = 2700  # kg/m^3
+aluminiumDensity = 2810  # kg/m^3
 # Aluminium Tank Safety Factor
-aluminiumTankSafetyFactor = 1.5
+aluminiumTankSafetyFactor = 2
+# Aluminium Tank minimum wall thickness
+aluminiumTankMinWallThickness = 0.002
 
-# Dead Propellant Mass Fraction
+# Dead Fuel Mass Fraction
 deadFuelMassFraction = 0.05
 # Dead Oxidiser Mass Fraction
 deadOxidizerMassFraction = 0.05
@@ -111,9 +113,9 @@ orDataStripFactor = 15
 ########################################################################################################################
 
 # Output File Name
-engineFileName = 'outputFiles/Amalia.rse'
+engineFileName = 'outputFiles/Amalia_8s.rse'
 # Rocket Engine Name
-engineName = 'Amalia'
+engineName = 'Amalia 8s'
 # Producer
 engineManufacturer = 'TXV'
 # Displayed System Diameter

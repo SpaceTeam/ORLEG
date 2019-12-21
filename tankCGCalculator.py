@@ -20,6 +20,8 @@ def calculateTankMass(tankDiameter, tankLength, tankPressure):
 	elif parameters.tankType == 'a':  # calculate aluminium tank mass using Barlow's formula (Kesselformel)
 		wallThickness = tankPressure * tankDiameter / (2 * parameters.aluminiumYieldStrength)
 		wallThickness *= parameters.aluminiumTankSafetyFactor
+		if wallThickness < parameters.aluminiumTankMinWallThickness:
+			wallThickness = parameters.aluminiumTankMinWallThickness
 		outerDiameter = tankDiameter + 2 * wallThickness
 		wallArea = np.pi * ((outerDiameter / 2) ** 2 - (tankDiameter / 2) ** 2)
 		massPerLength = wallArea * parameters.aluminiumDensity
@@ -45,9 +47,10 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 	totalFuelVolume = totalFuelMassLaunch / fuelDensity  # Total Fuel Volume
 	oxidizerTankLength = totalOxidizerVolume / tankArea  # Oxidizer Tank Length
 	fuelTankLength = totalFuelVolume / tankArea  # Fuel Tank Length
-	print("Fuel tank length: " + str(fuelTankLength) + "m oxidizer tank length: " + str(oxidizerTankLength) + "m")
 	oxidizerTankDryMass = calculateTankMass(parameters.tankDiameter, oxidizerTankLength, parameters.oxidizerTankPressure)  # Oxidizer Tank Dry Mass
 	fuelTankDryMass = calculateTankMass(parameters.tankDiameter, fuelTankLength, parameters.fuelTankPressure)  # Fuel Tank Dry Mass
+	print("oxidizer tank length in m: " + str(oxidizerTankLength) + ", dry mass in kg: " + str(oxidizerTankDryMass))
+	print("fuel tank length in m: " + str(fuelTankLength) + ", dry mass in kg: " + str(fuelTankDryMass))
 
 	# Definition of Dead Mass Distribution (Even for gaseous, bottom for fluid)
 	if parameters.deadOxidizerState == 'l':
@@ -80,7 +83,7 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 			tankSectionMass = fuelTankDryMass
 			tankSectionLength = fuelTankLength
 			distanceToFuelTankBottom = distance  # distance to Fuel Tank Bottom
-		elif i == 'C':  # Calculatin Coax Tank Assembly
+		elif i == 'C':  # Coax Tank Assembly
 			innerTankDiameter = np.sqrt((parameters.tankDiameter ** 2) / (1 + totalFuelVolume / totalOxidizerVolume))
 			tankLength = totalOxidizerVolume / (0.25 * np.pi * innerTankDiameter ** 2)
 			outerTankMass = calculateTankMass(parameters.tankDiameter, tankLength, parameters.fuelTankPressure)  # FIXME assumes fuel tank on outside
@@ -117,5 +120,5 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 		totalMassCurrent = dryMass + oxidizerMassCurrent + fuelMassCurrent
 		cgt = tankLength - (cgFraction / totalMassCurrent)
 		cgList.append(cgt)
-
+	print("Tank mass and CG calculation done, tankLength: " + str(tankLength) + " dryMass: " + str(dryMass) + " wetMass: " + str(wetMass))
 	return cgList, propellantMassList, tankLength, wetMass, dryMass

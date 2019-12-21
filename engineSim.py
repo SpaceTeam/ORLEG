@@ -45,7 +45,7 @@ def simulateEngine(refAmbientPressure):
 	massFlowRate = parameters.seaLevelThrust / (v2 + (p2 - parameters.ambientPressure) / (density * v2))  # mass flow calculated for input thrust at ground level (overexpanding engine)
 	exitArea = calculateExitArea(T2, p2, v2, density, massFlowRate)
 	refThrust = massFlowRate * v2
-	print("Engine Simulation Successful")
+	print("Engine Simulation done, massFLowRate: " + str(massFlowRate) + " specificImpulse: " + str(specificImpulse) + " refThrust: " + str(refThrust))
 	return massFlowRate, specificImpulse, exitArea, refThrust
 
 
@@ -57,4 +57,5 @@ def calcThrustAltComp(refAmbientPressure, ambientPressureList, optimalThrust, ex
 		thrustList.append(val)
 	maximumThrust = thrustList[-1]
 	averageThrust = (thrustList[0] + thrustList[-1]) / 2
+	print("Engine Altitude Compensation done, averageThrust: " + str(averageThrust) + " maximumThrust: " + str(maximumThrust))
 	return thrustList, averageThrust, maximumThrust
