@@ -1,11 +1,11 @@
-from CoolProp.CoolProp import PropsSI as ps
+from CoolProp.CoolProp import PropsSI
 
 
 # Ideal gas constant
 def idealGasConstant(composition):
 	rval = 0
 	for key in composition:
-		rval += composition[key] / ps('molarmass', 'P', 200, 'T', 200, key)
+		rval += composition[key] / PropsSI('molarmass', 'P', 200, 'T', 200, key)
 	return 8.344598 * rval
 
 
@@ -13,7 +13,7 @@ def idealGasConstant(composition):
 def specificThermalEnthalpy(T, P, composition):
 	ste = 0
 	for key in composition:
-		ste += composition[key] * ps('H', 'P', P, 'T', T, key)
+		ste += composition[key] * PropsSI('H', 'P', P, 'T', T, key)
 	return ste
 
 
@@ -22,6 +22,6 @@ def specificHeatsRatio(T, P, composition):
 	cpval = 0
 	cvval = 0
 	for key in composition:
-		cpval += composition[key] * ps('C', 'P', P, 'T', T, key)
-		cvval += composition[key] * ps('CVMASS', 'P', P, 'T', T, key)
+		cpval += composition[key] * PropsSI('C', 'P', P, 'T', T, key)
+		cvval += composition[key] * PropsSI('CVMASS', 'P', P, 'T', T, key)
 	return cpval / cvval

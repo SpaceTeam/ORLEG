@@ -1,50 +1,56 @@
 from inputFiles import parameters
 
 
-def writeEngineFile(massFlowRate, specificImpulse, averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList):  #TODO: write to string first and then single file write
+def writeEngineFile(massFlowRate, specificImpulse, averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList):
+	string = '<engine-database>' + \
+		'\n  <engine-list>' + \
+		'\n    <engine  ' + \
+		'mfg="' + str(parameters.engineManufacturer) + '" ' + \
+		'code="' + str(parameters.engineName) + '" ' + \
+		'Type="Liquid" ' + \
+		'dia="' + str(int(parameters.displayedSystemDiameter * 1000)) + '" ' + \
+		'len="' + str(int(tankLength * 1000)) + '" ' + \
+		'initWt="' + str(int(wetMass * 1000)) + '" ' + \
+		'propWt="' + str(int((wetMass - dryMass) * 1000)) + '" ' + \
+		'delays="0" ' + \
+		'auto-calc-mass="' + str(parameters.automaticMassCalculation) + '" ' + \
+		'auto-calc-cg="0" ' + \
+		'avgThrust="' + str(averageThrust) + '" ' + \
+		'peakThrust="' + str(maximumThrust) + '" ' + \
+		'throatDia="0" ' + \
+		'exitDia="' + str(0 * 1000) + '" ' + \
+		'Itot="' + str((massFlowRate * parameters.burnDuration) * specificImpulse * 9.81) + '" ' + \
+		'burn-time="' + str(parameters.burnDuration) + '" ' + \
+		'massFrac="0" ' + \
+		'Isp="' + str(specificImpulse) + '" ' + \
+		'tDiv="10" ' + \
+		'tStep="-1." ' + \
+		'tFix="1" ' + \
+		'FDiv="10" ' + \
+		'FStep="-1." ' + \
+		'FFix="1" ' + \
+		'mDiv="10" ' + \
+		'mStep="-1." ' + \
+		'mFix="1" ' + \
+		'cgDiv="10" ' + \
+		'cgStep="-1." ' + \
+		'cgFix="1"' + \
+		'>'
+
+	string += '\n      <data>'
+	for n, i in enumerate(timestampList):
+		string += '\n        <eng-data ' + \
+			'cg="' + str(cgList[n] * 1000) + '" ' + \
+			'f="' + str(thrustList[n]) + '" ' + \
+			'm="' + str(propellantMassList[n]) + '" ' + \
+			't="' + str(timestampList[n]) + '"/>'
+	string += '\n      </data>'
+
+	string += '\n    </engine>' + \
+		'\n  </engine-list>' + \
+		'\n</engine-database>'
+
 	with open(parameters.engineFileName, "w") as file:
-		file.write('<engine-database>')
-		file.write('\n  <engine-list>')
-		file.write('\n    <engine  ')
-		file.write('mfg="' + str(parameters.engineManufacturer) + '" ')
-		file.write('code="' + str(parameters.engineName) + '" ')
-		file.write('Type="Liquid" ')
-		file.write('dia="' + str(int(parameters.displayedSystemDiameter * 1000)) + '" ')
-		file.write('len="' + str(int(tankLength * 1000)) + '" ')
-		file.write('initWt="' + str(int(wetMass * 1000)) + '" ')
-		file.write('propWt="' + str(int((wetMass - dryMass) * 1000)) + '" ')
-		file.write('delays="0" ')
-		file.write('auto-calc-mass="' + str(parameters.automaticMassCalculation) + '" ')
-		file.write('auto-calc-cg="0" ')
-		file.write('avgThrust="' + str(averageThrust) + '" ')
-		file.write('peakThrust="' + str(maximumThrust) + '" ')
-		file.write('throatDia="0" ')
-		file.write('exitDia="' + str(0 * 1000) + '" ')
-		file.write('Itot="' + str((massFlowRate * parameters.burnDuration) * specificImpulse * 9.81) + '" ')
-		file.write('burn-time="' + str(parameters.burnDuration) + '" ')
-		file.write('massFrac="0" ')
-		file.write('Isp="' + str(specificImpulse) + '" ')
-		file.write('tDiv="10" ')
-		file.write('tStep="-1." ')
-		file.write('tFix="1" ')
-		file.write('FDiv="10" ')
-		file.write('FStep="-1." ')
-		file.write('FFix="1" ')
-		file.write('mDiv="10" ')
-		file.write('mStep="-1." ')
-		file.write('mFix="1" ')
-		file.write('cgDiv="10" ')
-		file.write('cgStep="-1." ')
-		file.write('cgFix="1">')
-		file.write('\n      <data>')
-		for n, i in enumerate(timestampList):
-			file.write('\n        <eng-data ')
-			file.write('cg="' + str(cgList[n] * 1000) + '" ')
-			file.write('f="' + str(thrustList[n]) + '" ')
-			file.write('m="' + str(propellantMassList[n]) + '" ')
-			file.write('t="' + str(timestampList[n]) + '"/>')
-		file.write('\n      </data>')
-		file.write('\n    </engine>')
-		file.write('\n  </engine-list>')
-		file.write('\n</engine-database>')
-		print("File Generation Complete")
+		file.write(string)
+	print("OpenRocket engine file generation complete")
+

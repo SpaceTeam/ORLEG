@@ -1,7 +1,7 @@
 from cea import getCeaData
 from inputFiles import parameters
-import thermodynamics as th
-import numpy as np
+import thermodynamics as thermo
+import numpy
 
 chamberTemperature = None
 chamberPressure = None
@@ -10,17 +10,17 @@ exhaustComposition = None
 
 # Isentropic Flow Equation (Kappa Upwind), returns T2
 def calculateTemperatureIsentropicFlow(T1, p2, p1):
-	return T1 * (p2 / p1) ** ((th.specificHeatsRatio(T1, p1, exhaustComposition) - 1) / (th.specificHeatsRatio(T1, p1, exhaustComposition)))
+	return T1 * (p2 / p1) ** ((thermo.specificHeatsRatio(T1, p1, exhaustComposition) - 1) / (thermo.specificHeatsRatio(T1, p1, exhaustComposition)))
 
 
 # Conservation of energy, returns v2
 def calculateVelocityConservationOfEnergy(T1, v1, p1, T2, p2):
-	return np.sqrt(2 * ((0.5 * v1 ** 2) + th.specificThermalEnthalpy(T1, p1, exhaustComposition) - th.specificThermalEnthalpy(T2, p2, exhaustComposition)))
+	return numpy.sqrt(2 * ((0.5 * v1 ** 2) + thermo.specificThermalEnthalpy(T1, p1, exhaustComposition) - thermo.specificThermalEnthalpy(T2, p2, exhaustComposition)))
 
 
 # Density
 def calculateDensity(p2, T2):
-	return p2 / (th.idealGasConstant(exhaustComposition) * T2)
+	return p2 / (thermo.idealGasConstant(exhaustComposition) * T2)
 
 
 # Diameter

@@ -1,6 +1,6 @@
 from inputFiles import parameters
-import numpy as np
-from CoolProp.CoolProp import PropsSI as ps
+import numpy
+from CoolProp.CoolProp import PropsSI
 
 
 # Calculation of propellant tank mass
@@ -9,12 +9,12 @@ def calculateTankMass(tankDiameter, tankLength, tankPressure):
 		# calculate maximum tension in reference tank wall
 		referenceWallArea = parameters.referenceCarbonTankMassPerLength / parameters.carbonDensity
 		referenceTankRadius = parameters.referenceCarbonTankDiameter / 2
-		referenceWallThickness = referenceTankRadius - np.sqrt((referenceTankRadius ** 2) - referenceWallArea / np.pi)
+		referenceWallThickness = referenceTankRadius - numpy.sqrt((referenceTankRadius ** 2) - referenceWallArea / numpy.pi)
 		maximumTension = tankPressure * parameters.referenceCarbonTankDiameter / (2 * referenceWallThickness)
 		# calculate tank mass
 		wallThickness = tankPressure * tankDiameter / (2 * maximumTension)
 		outerDiameter = tankDiameter + 2 * wallThickness
-		wallArea = np.pi * ((outerDiameter / 2) ** 2 - (tankDiameter / 2) ** 2)
+		wallArea = numpy.pi * ((outerDiameter / 2) ** 2 - (tankDiameter / 2) ** 2)
 		massPerLength = wallArea * parameters.carbonDensity
 		return massPerLength * tankLength
 	elif parameters.tankType == 'a':  # calculate aluminium tank mass using Barlow's formula (Kesselformel)
@@ -23,7 +23,7 @@ def calculateTankMass(tankDiameter, tankLength, tankPressure):
 		if wallThickness < parameters.aluminiumTankMinWallThickness:
 			wallThickness = parameters.aluminiumTankMinWallThickness
 		outerDiameter = tankDiameter + 2 * wallThickness
-		wallArea = np.pi * ((outerDiameter / 2) ** 2 - (tankDiameter / 2) ** 2)
+		wallArea = numpy.pi * ((outerDiameter / 2) ** 2 - (tankDiameter / 2) ** 2)
 		massPerLength = wallArea * parameters.aluminiumDensity
 		return massPerLength * tankLength + 2 * parameters.aluminiumTankEndcapMass
 	else:
@@ -40,9 +40,9 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 	oxidizerDeadMass = totalOxidizerMassLaunch - usableOxidizerMassLaunch  # Oxidizer Dead Mass
 	totalFuelMassLaunch = usableFuelMassLaunch * (1 + parameters.deadFuelMassFraction)  # Total Fuel Mass
 	fuelDeadMass = totalFuelMassLaunch - usableFuelMassLaunch  # Fuel Dead Mass
-	oxidizerDensity = ps('D', 'Q', parameters.oxidizerTankGasFraction, 'T', parameters.oxidizerTankTemperature, parameters.oxidizerType)  # Oxidizer Density
-	fuelDensity = ps('D', 'P', parameters.fuelTankPressure, 'T', parameters.fuelTankTemperature, parameters.fuelType)  # Fuel Density
-	tankArea = 0.25 * np.pi * parameters.tankDiameter ** 2  # Tank Area
+	oxidizerDensity = PropsSI('D', 'Q', parameters.oxidizerTankGasFraction, 'T', parameters.oxidizerTankTemperature, parameters.oxidizerType)  # Oxidizer Density
+	fuelDensity = PropsSI('D', 'P', parameters.fuelTankPressure, 'T', parameters.fuelTankTemperature, parameters.fuelType)  # Fuel Density
+	tankArea = 0.25 * numpy.pi * parameters.tankDiameter ** 2  # Tank Area
 	totalOxidizerVolume = totalOxidizerMassLaunch / oxidizerDensity  # Total Oxidizer Volume
 	totalFuelVolume = totalFuelMassLaunch / fuelDensity  # Total Fuel Volume
 	oxidizerTankLength = totalOxidizerVolume / tankArea  # Oxidizer Tank Length
@@ -84,16 +84,16 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 			tankSectionLength = fuelTankLength
 			distanceToFuelTankBottom = distance  # distance to Fuel Tank Bottom
 		elif i == 'C':  # Coax Tank Assembly
-			innerTankDiameter = np.sqrt((parameters.tankDiameter ** 2) / (1 + totalFuelVolume / totalOxidizerVolume))
-			tankLength = totalOxidizerVolume / (0.25 * np.pi * innerTankDiameter ** 2)
+			innerTankDiameter = numpy.sqrt((parameters.tankDiameter ** 2) / (1 + totalFuelVolume / totalOxidizerVolume))
+			tankLength = totalOxidizerVolume / (0.25 * numpy.pi * innerTankDiameter ** 2)
 			outerTankMass = calculateTankMass(parameters.tankDiameter, tankLength, parameters.fuelTankPressure)  # FIXME assumes fuel tank on outside
 			innerTankMass = calculateTankMass(innerTankDiameter, tankLength, parameters.oxidizerTankPressure)  # FIXME assumes oxidizer tank on inside
 			tankSectionMass = outerTankMass + innerTankMass
 			tankSectionLength = tankLength
 			distanceToFuelTankBottom = distance
 			distanceToOxidizerTankBottom = distance
-			oxidizerTankVolumeCorrectionFactor = (np.pi * 0.25 * innerTankDiameter ** 2) / tankArea
-			fuelTankVolumeCorrectionFactor = (np.pi * 0.25 * ((parameters.tankDiameter ** 2) - (innerTankDiameter ** 2))) / tankArea
+			oxidizerTankVolumeCorrectionFactor = (numpy.pi * 0.25 * innerTankDiameter ** 2) / tankArea
+			fuelTankVolumeCorrectionFactor = (numpy.pi * 0.25 * ((parameters.tankDiameter ** 2) - (innerTankDiameter ** 2))) / tankArea
 		else:
 			tankSectionMass = i
 			tankSectionLength = parameters.lengthArrangement[n]
