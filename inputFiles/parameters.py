@@ -1,18 +1,17 @@
 ########################################################################################################################
-# Engine Parameters
+# Engine Parameters  # TODO: simplify
 ########################################################################################################################
-
-# Name of CEA data input file (CEA-Settings: T in Kelvin, P in Bar, Mole Fractions)
-ceaDataFileName = 'inputFiles/ceainput.txt'
-# Input definition ('mole' for mole fraction, 'mass' for massfraction)
-exhaustCompositionRatioType = 'mole'
 
 # Fuel
 fuelType = "Ethanol"
 # Oxidizer
 oxidizerType = "N2O"
 # Mixture Ratio (O/F Mass)
-oxidizerFuelRatio = 3.4
+oxidizerFuelRatio = 3
+# Chamber Pressure
+chamberPressure = 10.0  # bar
+# Expansion pressure ratio
+expansionPressureRatio = 10
 
 # Ambient Pressure
 ambientPressure = 10 ** 5  # Pa
@@ -21,8 +20,6 @@ overExpansionRatio = 0.333
 
 # Engine Thrust at ambient pressure
 seaLevelThrust = 500  # N
-# Burntime
-burnDuration = 8  # s
 # Combustion Chamber Velocity
 chamberVelocity = 40  # m/s
 # Ispcorrection (1 for standard, scaling factor in case of reduced isp)
@@ -35,6 +32,9 @@ nozzleSimCellCount = 50  # Nodimension
 ########################################################################################################################
 # Tank Parameters
 ########################################################################################################################
+
+# Burntime
+burnDuration = 8  # s
 
 # Tank Diameter
 tankDiameter = 0.09  # m
