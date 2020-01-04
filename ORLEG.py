@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import inputDataProcessing
+import cea
 import orSimDataReader
 import engineSim
 import tankCGCalculator
 import orEngineFileWriter
 
 
-inputDataProcessing.processInputData()
 refAmbientPressure, timestampList, ambientPressureList = orSimDataReader.readORSimData()
 massFlowRate, specificImpulse, exitArea, refThrust = engineSim.simulateEngine(refAmbientPressure)
 thrustList, averageThrust, maximumThrust = engineSim.calcThrustAltComp(refAmbientPressure, ambientPressureList, refThrust, exitArea)

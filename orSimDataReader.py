@@ -67,7 +67,7 @@ def readORSimData():
 	timestampList.append(te)
 	ambientPressureList.append(pre)
 	hl.append(he)
-	hn = parameters.overexpansionRatio * hl[-1]
+	hn = parameters.overExpansionRatio * hl[-1]
 	hpre = 0
 	for n, i in enumerate(hl):
 		if i >= hn > hpre:
