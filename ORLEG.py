@@ -1,13 +1,28 @@
 #!/usr/bin/env python3
 
+from inputFiles import parameters
+from Engine import Engine
 import orSimDataReader
-import engineSim
 import tankCGCalculator
 import orEngineFileWriter
 
 
-refAmbientPressure, timestampList, ambientPressureList = orSimDataReader.readORSimData()
-massFlowRate, specificImpulse, exitArea, refThrust = engineSim.simulateEngine(refAmbientPressure)
-thrustList, averageThrust, maximumThrust = engineSim.calcThrustAltComp(refAmbientPressure, ambientPressureList, refThrust, exitArea)
-cgList, propellantMassList, tankLength, wetMass, dryMass = tankCGCalculator.calculateTankCG(massFlowRate, timestampList)
-orEngineFileWriter.writeEngineFile(massFlowRate, specificImpulse, averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList)
+engine = Engine(parameters.name, parameters.fuelType, parameters.oxidizerType, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency)
+engine.printParameters()
+
+timestampList, ambientPressureList = orSimDataReader.readORSimData(parameters.orDataFileName, parameters.burnDuration, parameters.orDataReductionFactor)
+
+thrustList = []
+thrustSum = 0
+maxThrust = 0
+for ambientPressure in ambientPressureList:
+	thrust = engine.thrust(ambientPressure)
+	thrustList.append(thrust)
+	thrustSum += thrust
+	if thrust > maxThrust:
+		maxThrust = thrust
+avgThrust = thrustSum / len(thrustList)
+
+cgList, propellantMassList, tankLength, wetMass, dryMass = tankCGCalculator.calculateTankCG(engine.massFlowRate, timestampList)
+
+orEngineFileWriter.writeEngineFile(avgThrust, maxThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList)

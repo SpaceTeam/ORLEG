@@ -49,8 +49,14 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 	fuelTankLength = totalFuelVolume / tankArea  # Fuel Tank Length
 	oxidizerTankDryMass = calculateTankMass(parameters.tankDiameter, oxidizerTankLength, parameters.oxidizerTankPressure)  # Oxidizer Tank Dry Mass
 	fuelTankDryMass = calculateTankMass(parameters.tankDiameter, fuelTankLength, parameters.fuelTankPressure)  # Fuel Tank Dry Mass
-	print("oxidizer tank length in m: " + str(oxidizerTankLength) + ", dry mass in kg: " + str(oxidizerTankDryMass))
-	print("fuel tank length in m: " + str(fuelTankLength) + ", dry mass in kg: " + str(fuelTankDryMass))
+
+	print("")
+	print("Oxidizer Tank Parameters:")
+	print("    Length in m: " + str(oxidizerTankLength))
+	print("    Dry mass in kg: " + str(oxidizerTankDryMass))
+	print("Fuel Tank Parameters:")
+	print("    Length in m: " + str(fuelTankLength))
+	print("    Dry mass in kg: " + str(fuelTankDryMass))
 
 	# Definition of Dead Mass Distribution (Even for gaseous, bottom for fluid)
 	if parameters.deadOxidizerState == 'l':
@@ -120,5 +126,11 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 		totalMassCurrent = dryMass + oxidizerMassCurrent + fuelMassCurrent
 		cgt = tankLength - (cgFraction / totalMassCurrent)
 		cgList.append(cgt)
-	print("Tank mass and CG calculation done, tankLength: " + str(tankLength) + " dryMass: " + str(dryMass) + " wetMass: " + str(wetMass))
+
+	print("")
+	print("Propulsion System Parameters:")
+	print("    Length in m: " + str(tankLength))
+	print("    Dry mass in kg: " + str(dryMass))
+	print("    Wet mass in kg: " + str(wetMass))
+
 	return cgList, propellantMassList, tankLength, wetMass, dryMass

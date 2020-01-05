@@ -1,7 +1,7 @@
 from inputFiles import parameters
 
 
-def writeEngineFile(massFlowRate, specificImpulse, averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList):
+def writeEngineFile(averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList):
 	string = '<engine-database>' + \
 		'\n  <engine-list>' + \
 		'\n    <engine  ' + \
@@ -19,10 +19,10 @@ def writeEngineFile(massFlowRate, specificImpulse, averageThrust, maximumThrust,
 		'peakThrust="' + str(maximumThrust) + '" ' + \
 		'throatDia="0" ' + \
 		'exitDia="' + str(0 * 1000) + '" ' + \
-		'Itot="' + str((massFlowRate * parameters.burnDuration) * specificImpulse * 9.81) + '" ' + \
+		'Itot="' + str(averageThrust * parameters.burnDuration) + '" ' + \
 		'burn-time="' + str(parameters.burnDuration) + '" ' + \
 		'massFrac="0" ' + \
-		'Isp="' + str(specificImpulse) + '" ' + \
+		'Isp="' + str(averageThrust * parameters.burnDuration / (wetMass - dryMass) / 9.81) + '" ' + \
 		'tDiv="10" ' + \
 		'tStep="-1." ' + \
 		'tFix="1" ' + \
@@ -52,5 +52,5 @@ def writeEngineFile(massFlowRate, specificImpulse, averageThrust, maximumThrust,
 
 	with open(parameters.engineFileName, "w") as file:
 		file.write(string)
-	print("OpenRocket engine file generation complete")
+	print("\nOpenRocket engine file generation complete")
 

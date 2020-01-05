@@ -1,33 +1,23 @@
 ########################################################################################################################
-# Engine Parameters  # TODO: simplify
+# Engine Parameters
 ########################################################################################################################
 
+# name
+name = "Amalia"
 # Fuel
 fuelType = "Ethanol"
 # Oxidizer
 oxidizerType = "N2O"
-# Mixture Ratio (O/F Mass)
+# Mixture Ratio (O/F mass flow)
 oxidizerFuelRatio = 3
 # Chamber Pressure
 chamberPressure = 10.0  # bar
-# Expansion pressure ratio
-expansionPressureRatio = 10
-
-# Ambient Pressure
-ambientPressure = 10 ** 5  # Pa
-# Optimal expansion altitude ratio (hoptimal/hmax)
-overExpansionRatio = 0.333
-
-# Engine Thrust at ambient pressure
-seaLevelThrust = 500  # N
-# Combustion Chamber Velocity
-chamberVelocity = 40  # m/s
-# Ispcorrection (1 for standard, scaling factor in case of reduced isp)
-ispCorrectionFactor = 1
-
-# Nozzle Simulation Cell Numbers
-nozzleSimCellCount = 50  # Nodimension
-
+# Reference ambient pressure
+referenceAmbientPressure = 1.0  # bar
+# Engine thrust at reference ambient pressure
+referenceThrust = 500  # N
+# Efficiency factor, scales ISP
+engineEfficiency = 1
 
 ########################################################################################################################
 # Tank Parameters
@@ -87,8 +77,8 @@ oxidizerTankGasFraction = 0
 
 # Name of OpenRocket output file
 orDataFileName = "inputFiles/pressuredata.csv"
-# Data Strip Factor (Rawdatapoints/Outputdatapoints)
-orDataStripFactor = 15
+# Data subsampling factor
+orDataReductionFactor = 10
 
 
 ########################################################################################################################
