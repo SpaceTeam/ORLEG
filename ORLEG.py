@@ -10,7 +10,7 @@ import orEngineFileWriter
 engine = Engine(parameters.name, parameters.fuelType, parameters.oxidizerType, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency)
 engine.printParameters()
 
-timestampList, ambientPressureList = orSimDataReader.readORSimData(parameters.orDataFileName, parameters.burnDuration, parameters.orDataReductionFactor)
+timestampList, ambientPressureList, altitudeList = orSimDataReader.readORSimData(parameters.orDataFileName, parameters.burnDuration, parameters.orDataReductionFactor)
 
 thrustList = []
 thrustSum = 0

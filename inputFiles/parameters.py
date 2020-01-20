@@ -9,7 +9,7 @@ fuelType = "Ethanol"
 # Oxidizer
 oxidizerType = "N2O"
 # Mixture Ratio (O/F mass flow)
-oxidizerFuelRatio = 3
+oxidizerFuelRatio = 3.5
 # Chamber Pressure
 chamberPressure = 10.0  # bar
 # Reference ambient pressure
@@ -30,7 +30,7 @@ burnDuration = 8  # s
 tankDiameter = 0.09  # m
 
 # Tank (and other stuff) Mass Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, mass in kg for other)
-massArrangement = (2.0, 'O', 1.0, 'F', 0.8)  # kg
+massArrangement = (2.0, 'O', 1.0, 'F', 0.5)  # kg
 # Tank (and other stuff) Length Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, length in m for other)
 lengthArrangement = (0.3, 'O', 0.3, 'F', 0.25)  # m
 
@@ -47,7 +47,7 @@ carbonDensity = 1600  # kg/m^3
 # Aluminium Tank Endcap Mass
 aluminiumTankEndcapMass = 0.25  # kg
 # Aluminium Yield Strength
-aluminiumYieldStrength = 310 * 10 ** 6  # Pa
+aluminiumYieldStrength = 280 * 10 ** 6  # Pa
 # Density Aluminium
 aluminiumDensity = 2810  # kg/m^3
 # Aluminium Tank Safety Factor

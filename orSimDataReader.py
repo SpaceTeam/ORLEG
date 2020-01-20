@@ -38,4 +38,4 @@ def readORSimData(dataFileName, burnDuration, reductionFactor=10):
 	ambientPressureListShort.append(ambientPressureList.pop(-1))
 	altitudeListShort.append(altitudeList.pop(-1))
 
-	return timestampListShort, ambientPressureListShort
+	return timestampListShort, ambientPressureListShort, altitudeListShort

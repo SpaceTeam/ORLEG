@@ -1,4 +1,4 @@
-from rocketcea.cea_obj import CEA_Obj
+from rocketcea.cea_obj_w_units import CEA_Obj
 
 g0 = 9.81
 
@@ -15,7 +15,9 @@ class Engine(object):
 		self.referenceThrust = referenceThrust
 		self.engineEfficiency = engineEfficiency
 
-		self.cea = CEA_Obj(oxName=self.oxidizerType, fuelName=self.fuelType, useSiUnits=True)
+		self.cea = CEA_Obj(oxName=self.oxidizerType, fuelName=self.fuelType, useFastLookup=0, makeOutput=0,
+			isp_units='m/sec', cstar_units='m/sec', pressure_units='Bar', temperature_units='K',
+			sonic_velocity_units='m/sec', enthalpy_units='J/kg', density_units='kg/m^3', specific_heat_units='J/kg-K')
 
 		self.areaRatio = self.cea.get_eps_at_PcOvPe(Pc=self.chamberPressure, MR=self.oxidizerFuelRatio, PcOvPe=(self.chamberPressure / self.referenceAmbientPressure))
 

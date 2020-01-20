@@ -52,9 +52,11 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 
 	print("")
 	print("Oxidizer Tank Parameters:")
+	print("    Volume in l: " + str(totalOxidizerVolume * 1000))
 	print("    Length in m: " + str(oxidizerTankLength))
 	print("    Dry mass in kg: " + str(oxidizerTankDryMass))
 	print("Fuel Tank Parameters:")
+	print("    Volume in l: " + str(totalFuelVolume * 1000))
 	print("    Length in m: " + str(fuelTankLength))
 	print("    Dry mass in kg: " + str(fuelTankDryMass))
 
