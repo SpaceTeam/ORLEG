@@ -3,43 +3,83 @@
 from inputFiles import parameters
 from Engine import Engine
 import orSimDataReader
-import tankCGCalculator
 from Tanks import MassObject
 from Tanks import Tank
 import orEngineFileWriter
 
-engineBay = MassObject(1.7, 0.14, 0)
-oxTank = Tank(2.04*10**-3, 0.32, 1.02, parameters.oxidizerType, parameters.oxidizerTankTemperature, 'Nitrogen', 273, 0.95, 45*10**5)
-oxPress = MassObject(0.26, 0.25)
-oxPressTank = Tank(0.8*10**-3, 0.2, 0.59, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
-fuelTank = Tank(0.73*10**-3, 0.12, 0.32, parameters.fuelType, parameters.fuelTankTemperature, 'Nitrogen', 273, 0.95, 30*10**5)
-fuelPress = MassObject(0.25, 0.25)
-fuelPressTank = Tank(0.25*10**-3, 0.2, 0.285, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
-
-componentList = [engineBay, oxTank, oxPress, oxPressTank, fuelTank, fuelPress, fuelPressTank]
-
-print(oxTank.fluidMass)
-print(fuelTank.fluidMass)
-print(oxPressTank.pressurantMass + fuelPressTank.pressurantMass + oxTank.pressurantMass + fuelTank.pressurantMass)
-print(MassObject.calculateTotalMass(componentList))
-print(MassObject.calculateTotalCG(componentList))
 
 engine = Engine(parameters.name, parameters.fuelType, parameters.oxidizerType, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency, parameters.waterFraction)
 engine.printParameters()
 
+
+engineBay = MassObject(1.9, 0.14, 0)
+oxTank = Tank(2.04*10**-3, 0.34, 1.05, parameters.oxidizerType, parameters.oxidizerTankTemperature, 'Nitrogen', 273, 0.95, 45*10**5)
+oxPress = MassObject(0.3, 0.16)
+oxPressTank = Tank(0.8*10**-3, 0.2, 0.7, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
+fuelTank = Tank(0.73*10**-3, 0.10, 0.4, parameters.fuelType, parameters.fuelTankTemperature, 'Nitrogen', 273, 0.95, 30*10**5)
+fuelPress = MassObject(0.3, 0.16)
+fuelPressTank = Tank(0.25*10**-3, 0.2, 0.34, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
+
+componentList = [engineBay, oxTank, oxPress, oxPressTank, fuelTank, fuelPress, fuelPressTank]
+
+propulsionSystemLength = MassObject.calculateTotalLength(componentList)
+dryMass = MassObject.calculateTotalDryMass(componentList)
+wetMass = MassObject.calculateTotalMass(componentList)
+
+print("")
+print("Propulsion System Parameters:")
+print("    Oxidizer mass: " + str(oxTank.fluidMass))
+print("    Fuel mass: " + str(fuelTank.fluidMass))
+print("    Pressurant mass: " + str(oxPressTank.pressurantMass + fuelPressTank.pressurantMass + oxTank.pressurantMass + fuelTank.pressurantMass))
+print("    Structural mass: " + str(MassObject.calculateTotalStructuralMass(componentList)))
+print("    Dry mass: " + str(dryMass))
+print("    Wet mass: " + str(wetMass))
+print("    Length: " + str(propulsionSystemLength))
+
+
 timestampList, ambientPressureList, altitudeList = orSimDataReader.readORSimData(parameters.orDataFileName, parameters.burnDuration, parameters.orDataReductionFactor)
 
+burnTime = None
 thrustList = []
 thrustSum = 0
+thrustNum = 0
 maxThrust = 0
-for ambientPressure in ambientPressureList:
-	thrust = engine.thrust(ambientPressure)
+massList = []
+cgList = []
+
+for i in range(len(timestampList)):
+	if i == 0:
+		timestep = 0
+	else:
+		timestep = timestampList[i] - timestampList[i - 1]
+
+	fuelMassToBurn = engine.fuelMassFlowRate * timestep
+	burnedFuelMass, flownPressurantMass = fuelTank.removeFluidMassKeepTankPressure(fuelMassToBurn)
+	fuelPressTank.addPressurantMass(-flownPressurantMass)
+	oxidizerMassToBurn = engine.oxMassFlowRate * timestep
+	burnedOxMass, flownPressurantMass = oxTank.removeFluidMassKeepTankPressure(oxidizerMassToBurn)
+	oxPressTank.addPressurantMass(-flownPressurantMass)
+
+	massList.append(MassObject.calculateTotalMass(componentList))
+	cgList.append(propulsionSystemLength - MassObject.calculateTotalCG(componentList))
+
+	if burnedFuelMass < fuelMassToBurn or burnedOxMass < oxidizerMassToBurn:
+		thrust = 0
+		if burnTime is None:
+			burnTime = timestampList[i]
+			print("\nearly burnout at t=" + str(burnTime))
+	else:
+		thrust = engine.getThrust(ambientPressureList[i] * 10**5)
+		thrustNum += 1
+
 	thrustList.append(thrust)
 	thrustSum += thrust
 	if thrust > maxThrust:
 		maxThrust = thrust
-avgThrust = thrustSum / len(thrustList)
+avgThrust = thrustSum / thrustNum
 
-cgList, propellantMassList, tankLength, wetMass, dryMass = tankCGCalculator.calculateTankCG(engine.massFlowRate, timestampList)
+if burnTime is None:
+	burnTime = parameters.burnDuration
+	print("\npropellant remaining at burnout")
 
-orEngineFileWriter.writeEngineFile(avgThrust, maxThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList)
+orEngineFileWriter.writeEngineFile(burnTime, avgThrust, maxThrust, propulsionSystemLength, wetMass, dryMass, timestampList, cgList, thrustList, massList)

@@ -27,6 +27,36 @@ class MassObject(object):
 		return totalMass
 
 	@staticmethod
+	def calculateTotalStructuralMass(massObjectList):
+		totalMass = 0
+		for massObject in massObjectList:
+			try:
+				mass = massObject.getTankMass()
+			except AttributeError:
+				mass = massObject.getMass()
+			totalMass += mass
+		return totalMass
+
+	@staticmethod
+	def calculateTotalDryMass(massObjectList):
+		totalMass = 0
+		for massObject in massObjectList:
+			try:
+				mass = massObject.getPressurantMass()
+			except AttributeError:
+				mass = 0
+			totalMass += mass
+		totalMass += MassObject.calculateTotalStructuralMass(massObjectList)
+		return totalMass
+
+	@staticmethod
+	def calculateTotalLength(massObjectList):
+		totalLength = 0
+		for massObject in massObjectList:
+			totalLength += massObject.getLength()
+		return totalLength
+
+	@staticmethod
 	def calculateTotalCG(massObjectList):
 		sum = 0
 		length = 0
@@ -86,7 +116,7 @@ class Tank(MassObject):
 		return self.pressurantMass / pressurantVolume
 
 	def getTankPressure(self):
-		pressurantDensity = self.pressurantMass - self.getPressurantVolume()
+		pressurantDensity = self.pressurantMass / self.getPressurantVolume()
 		return PropsSI('P', 'D', pressurantDensity, 'T', self.pressurantTemperature, self.pressurantType)
 
 	def removeFluidMass(self, removedFluidMass):  # FIXME: isotherm, not realistic
@@ -106,5 +136,5 @@ class Tank(MassObject):
 
 	def setTankPressure(self, tankPressure):  # FIXME: isotherm, not realistic
 		oldPressurantMass = self.pressurantMass
-		self.pressurantMass = self.getPressurantVolume() * PropsSI('D', 'P', tankPressure, 'T', self.fluidTemperature, self.fluidType)
+		self.pressurantMass = self.getPressurantVolume() * PropsSI('D', 'P', tankPressure, 'T', self.pressurantTemperature, self.pressurantType)
 		return self.pressurantMass - oldPressurantMass

@@ -31,13 +31,15 @@ class Engine(object):
 
 		self.areaRatio = self.cea.get_eps_at_PcOvPe(Pc=self.chamberPressure, MR=self.oxidizerFuelRatio, PcOvPe=(self.chamberPressure / self.referenceAmbientPressure))
 
-		(self.exhaustVelocity, expansionMode) = self.cea.estimate_Ambient_Isp(self.chamberPressure, self.oxidizerFuelRatio, self.areaRatio, self.referenceAmbientPressure)
-
-		self.exhaustVelocity *= self.engineEfficiency
+		self.exhaustVelocity = self.getExhaustVelocity()
 
 		self.referenceIsp = self.exhaustVelocity / g0
 
 		self.massFlowRate = self.referenceThrust / self.exhaustVelocity
+
+		self.fuelMassFlowRate = self.massFlowRate / (self.oxidizerFuelRatio + 1)
+
+		self.oxMassFlowRate = self.massFlowRate / (self.oxidizerFuelRatio + 1) * self.oxidizerFuelRatio
 
 		self.combustionTemperature = self.cea.get_Tcomb(self.chamberPressure, self.oxidizerFuelRatio)
 
@@ -58,7 +60,7 @@ class Engine(object):
 		print("    massFlow: " + str(self.massFlowRate))
 		print("    combustionTemperature: " + str(self.combustionTemperature))
 
-	def isp(self, ambientPressure=None, oxidizerFuelRatio=None, chamberPressure=None):
+	def getExhaustVelocity(self, ambientPressure=None, oxidizerFuelRatio=None, chamberPressure=None):
 		if ambientPressure is None:
 			ambientPressure = self.referenceAmbientPressure
 		if oxidizerFuelRatio is None:
@@ -66,11 +68,16 @@ class Engine(object):
 		if chamberPressure is None:
 			chamberPressure = self.chamberPressure
 
-		(isp, expansionMode) = self.cea.estimate_Ambient_Isp(chamberPressure, oxidizerFuelRatio, self.areaRatio, ambientPressure)
-		return isp / g0
+		(ve, expansionMode) = self.cea.estimate_Ambient_Isp(chamberPressure, oxidizerFuelRatio, self.areaRatio, ambientPressure)
+		if expansionMode == 'Separated':
+			print("WARNING: Flow separation in nozzle!")
 
-	def thrust(self, ambientPressure=None, massFlowRate=None, oxidizerFuelRatio=None, chamberPressure=None):
+		ve *= self.engineEfficiency
+
+		return ve
+
+	def getThrust(self, ambientPressure=None, massFlowRate=None, oxidizerFuelRatio=None, chamberPressure=None):
 		if massFlowRate is None:
 			massFlowRate = self.massFlowRate
 
-		return massFlowRate * self.isp(ambientPressure, oxidizerFuelRatio, chamberPressure) * g0
+		return massFlowRate * self.getExhaustVelocity(ambientPressure, oxidizerFuelRatio, chamberPressure)

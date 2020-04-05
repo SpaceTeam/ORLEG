@@ -1,7 +1,7 @@
 from inputFiles import parameters
 
 
-def writeEngineFile(averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, propellantMassList):
+def writeEngineFile(burnTime, averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, massList):
 	string = '<engine-database>' + \
 		'\n  <engine-list>' + \
 		'\n    <engine  ' + \
@@ -19,10 +19,10 @@ def writeEngineFile(averageThrust, maximumThrust, tankLength, wetMass, dryMass, 
 		'peakThrust="' + str(maximumThrust) + '" ' + \
 		'throatDia="0" ' + \
 		'exitDia="' + str(0 * 1000) + '" ' + \
-		'Itot="' + str(averageThrust * parameters.burnDuration) + '" ' + \
-		'burn-time="' + str(parameters.burnDuration) + '" ' + \
+		'Itot="' + str(averageThrust * burnTime) + '" ' + \
+		'burn-time="' + str(burnTime) + '" ' + \
 		'massFrac="0" ' + \
-		'Isp="' + str(averageThrust * parameters.burnDuration / (wetMass - dryMass) / 9.81) + '" ' + \
+		'Isp="' + str(averageThrust * burnTime / (wetMass - dryMass) / 9.81) + '" ' + \
 		'tDiv="10" ' + \
 		'tStep="-1." ' + \
 		'tFix="1" ' + \
@@ -42,7 +42,7 @@ def writeEngineFile(averageThrust, maximumThrust, tankLength, wetMass, dryMass, 
 		string += '\n        <eng-data ' + \
 			'cg="' + str(cgList[n] * 1000) + '" ' + \
 			'f="' + str(thrustList[n]) + '" ' + \
-			'm="' + str(propellantMassList[n]) + '" ' + \
+			'm="' + str(massList[n] * 1000) + '" ' + \
 			't="' + str(timestampList[n]) + '"/>'
 	string += '\n      </data>'
 

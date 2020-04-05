@@ -32,9 +32,9 @@ burnDuration = 8  # s
 tankDiameter = 0.09  # m
 
 # Tank (and other stuff) Mass Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, mass in kg for other)
-massArrangement = (1.7, 'O', 1.0, 'F', 0.53)  # kg
+#massArrangement = (1.7, 'O', 1.0, 'F', 0.53)  # kg
 # Tank (and other stuff) Length Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, length in m for other)
-lengthArrangement = (0.14, 'O', 0.45, 'F', 0.3)  # m
+#lengthArrangement = (0.14, 'O', 0.45, 'F', 0.3)  # m
 
 # Tank type ('c' for carbon, 'a' for aluminium)
 tankType = 'a'
@@ -80,7 +80,7 @@ oxidizerTankGasFraction = 0
 # Name of OpenRocket output file
 orDataFileName = "inputFiles/pressuredata.csv"
 # Data subsampling factor
-orDataReductionFactor = 10
+orDataReductionFactor = 1
 
 
 ########################################################################################################################
@@ -94,6 +94,6 @@ engineName = 'Amalia 8s'
 # Producer
 engineManufacturer = 'TXV'
 # Displayed System Diameter
-displayedSystemDiameter = 0.1  # m
+displayedSystemDiameter = 0.12  # m
 # Automatic Mass Calculation
 automaticMassCalculation = 0
