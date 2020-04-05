@@ -41,7 +41,11 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 	totalFuelMassLaunch = usableFuelMassLaunch * (1 + parameters.deadFuelMassFraction)  # Total Fuel Mass
 	fuelDeadMass = totalFuelMassLaunch - usableFuelMassLaunch  # Fuel Dead Mass
 	oxidizerDensity = PropsSI('D', 'Q', parameters.oxidizerTankGasFraction, 'T', parameters.oxidizerTankTemperature, parameters.oxidizerType)  # Oxidizer Density
-	fuelDensity = PropsSI('D', 'P', parameters.fuelTankPressure, 'T', parameters.fuelTankTemperature, parameters.fuelType)  # Fuel Density
+	if parameters.fuelType == "EthanolWater":
+		fuelType = 'Ethanol[0.7]&Water[0.3]'  # FIXME calculate mole fractions
+	else:
+		fuelType = parameters.fuelType
+	fuelDensity = PropsSI('D', 'P', parameters.fuelTankPressure, 'T', parameters.fuelTankTemperature, fuelType)  # Fuel Density
 	tankArea = 0.25 * numpy.pi * parameters.tankDiameter ** 2  # Tank Area
 	totalOxidizerVolume = totalOxidizerMassLaunch / oxidizerDensity  # Total Oxidizer Volume
 	totalFuelVolume = totalFuelMassLaunch / fuelDensity  # Total Fuel Volume
@@ -52,10 +56,12 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 
 	print("")
 	print("Oxidizer Tank Parameters:")
+	print("    Oxidizer Mass in kg: " + str(totalOxidizerMassLaunch))
 	print("    Volume in l: " + str(totalOxidizerVolume * 1000))
 	print("    Length in m: " + str(oxidizerTankLength))
 	print("    Dry mass in kg: " + str(oxidizerTankDryMass))
 	print("Fuel Tank Parameters:")
+	print("    Fuel Mass in kg: " + str(totalFuelMassLaunch))
 	print("    Volume in l: " + str(totalFuelVolume * 1000))
 	print("    Length in m: " + str(fuelTankLength))
 	print("    Dry mass in kg: " + str(fuelTankDryMass))
@@ -109,7 +115,7 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 		distance += tankSectionLength
 		dryMass += tankSectionMass
 	tankLength = distance  # Total Tank Length
-	wetMass = dryMass + usableOxidizerMassLaunch + usableFuelMassLaunch
+	wetMass = dryMass + totalOxidizerMassLaunch + totalFuelMassLaunch
 	cgDry = cgFraction / dryMass
 
 	# Generation of propellant mass list during operation

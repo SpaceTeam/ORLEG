@@ -6,18 +6,20 @@
 name = "Amalia"
 # Fuel
 fuelType = "Ethanol"
+# Water mass fraction in case of fueltype "EthanolWater"
+waterFraction = 30.0  # %
 # Oxidizer
 oxidizerType = "N2O"
 # Mixture Ratio (O/F mass flow)
-oxidizerFuelRatio = 3.5
+oxidizerFuelRatio = 3.0
 # Chamber Pressure
-chamberPressure = 10.0  # bar
+chamberPressure = 10.0 * 10**5  # Pa
 # Reference ambient pressure
-referenceAmbientPressure = 1.0  # bar
+referenceAmbientPressure = 1.0 * 10**5  # Pa
 # Engine thrust at reference ambient pressure
 referenceThrust = 500  # N
 # Efficiency factor, scales ISP
-engineEfficiency = 1
+engineEfficiency = 0.95
 
 ########################################################################################################################
 # Tank Parameters
@@ -30,9 +32,9 @@ burnDuration = 8  # s
 tankDiameter = 0.09  # m
 
 # Tank (and other stuff) Mass Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, mass in kg for other)
-massArrangement = (2.0, 'O', 1.0, 'F', 0.5)  # kg
+massArrangement = (1.7, 'O', 1.0, 'F', 0.53)  # kg
 # Tank (and other stuff) Length Arrangement (from bottom to top, for fueltank: 'F', for oxidizer: 'O','C' for Coax, length in m for other)
-lengthArrangement = (0.3, 'O', 0.3, 'F', 0.25)  # m
+lengthArrangement = (0.14, 'O', 0.45, 'F', 0.3)  # m
 
 # Tank type ('c' for carbon, 'a' for aluminium)
 tankType = 'a'
@@ -66,8 +68,8 @@ deadFuelState = 'l'
 # Propellant Storage Conditions
 fuelTankTemperature = 25 + 273.15  # K
 fuelTankPressure = 30 * 10 ** 5  # Pa
-oxidizerTankTemperature = 25 + 273.15  # K
-oxidizerTankPressure = 50 * 10 ** 5  # Pa
+oxidizerTankTemperature = 10 + 273.15  # K
+oxidizerTankPressure = 45 * 10 ** 5  # Pa
 oxidizerTankGasFraction = 0
 
 
