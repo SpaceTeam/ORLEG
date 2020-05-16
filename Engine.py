@@ -6,7 +6,7 @@ g0 = 9.81
 
 class Engine(object):
 
-	def __init__(self, name, fuelType, oxidizerType, oxidizerFuelRatio, chamberPressure, referenceAmbientPressure, referenceThrust, engineEfficiency, waterFraction=0.0):
+	def __init__(self, name, fuelType, oxidizerType, oxidizerFuelRatio, chamberPressure, referenceAmbientPressure, referenceThrust, engineEfficiency, waterFraction=0.0, contractionRatio=2.5):
 		self.name = name
 		self.fuelType = fuelType
 		self.oxidizerType = oxidizerType
@@ -25,7 +25,7 @@ class Engine(object):
 			"""
 			add_new_fuel('EthanolWater', card_str)
 
-		self.cea = CEA_Obj(oxName=self.oxidizerType, fuelName=self.fuelType, useFastLookup=0, makeOutput=0,
+		self.cea = CEA_Obj(oxName=self.oxidizerType, fuelName=self.fuelType, useFastLookup=0, makeOutput=0, fac_CR=contractionRatio,
 			isp_units='m/sec', cstar_units='m/sec', pressure_units='Pa', temperature_units='K',
 			sonic_velocity_units='m/sec', enthalpy_units='J/kg', density_units='kg/m^3', specific_heat_units='J/kg-K')
 

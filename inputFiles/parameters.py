@@ -19,7 +19,7 @@ referenceAmbientPressure = 1.0 * 10**5  # Pa
 # Engine thrust at reference ambient pressure
 referenceThrust = 500  # N
 # Efficiency factor, scales ISP
-engineEfficiency = 0.95
+engineEfficiency = 0.90
 
 ########################################################################################################################
 # Tank Parameters

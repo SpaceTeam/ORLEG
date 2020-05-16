@@ -11,12 +11,11 @@ import orEngineFileWriter
 engine = Engine(parameters.name, parameters.fuelType, parameters.oxidizerType, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency, parameters.waterFraction)
 engine.printParameters()
 
-
 engineBay = MassObject(1.9, 0.14, 0)
-oxTank = Tank(2.04*10**-3, 0.34, 1.05, parameters.oxidizerType, parameters.oxidizerTankTemperature, 'Nitrogen', 273, 0.95, 45*10**5)
+oxTank = Tank(2.04*10**-3, 0.34, 1.05, parameters.oxidizerType, parameters.oxidizerTankTemperature, 'Nitrogen', 240, 0.95, 45*10**5)
 oxPress = MassObject(0.3, 0.16)
 oxPressTank = Tank(0.8*10**-3, 0.2, 0.7, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
-fuelTank = Tank(0.73*10**-3, 0.10, 0.4, parameters.fuelType, parameters.fuelTankTemperature, 'Nitrogen', 273, 0.95, 30*10**5)
+fuelTank = Tank(0.73*10**-3, 0.10, 0.4, parameters.fuelType, parameters.fuelTankTemperature, 'Nitrogen', 250, 0.95, 30*10**5)
 fuelPress = MassObject(0.3, 0.16)
 fuelPressTank = Tank(0.25*10**-3, 0.2, 0.34, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
 
