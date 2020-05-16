@@ -12,10 +12,10 @@ engine = Engine(parameters.name, parameters.fuelType, parameters.oxidizerType, p
 engine.printParameters()
 
 engineBay = MassObject(1.9, 0.14, 0)
-oxTank = Tank(2.04*10**-3, 0.34, 1.05, parameters.oxidizerType, parameters.oxidizerTankTemperature, 'Nitrogen', 240, 0.95, parameters.oxidizerTankPressure)
+oxTank = Tank(2.04*10**-3, 0.34, 1.05, parameters.oxidizerType, parameters.oxidizerTemperature, 'Nitrogen', 240, 0.95, parameters.oxidizerTankPressure)
 oxPress = MassObject(0.3, 0.16)
 oxPressTank = Tank(0.8*10**-3, 0.2, 0.7, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
-fuelTank = Tank(0.73*10**-3, 0.10, 0.4, parameters.fuelType, parameters.fuelTankTemperature, 'Nitrogen', 250, 0.95, parameters.fuelTankPressure)
+fuelTank = Tank(0.73*10**-3, 0.10, 0.4, parameters.fuelType, parameters.fuelTemperature, 'Nitrogen', 250, 0.95, parameters.fuelTankPressure)
 fuelPress = MassObject(0.3, 0.16)
 fuelPressTank = Tank(0.25*10**-3, 0.2, 0.34, 'Water', 293, 'Nitrogen', 283, 0, 250*10**5)
 
@@ -36,7 +36,7 @@ print("    Wet mass: " + str(round(wetMass, 3)))
 print("    Length: " + str(round(propulsionSystemLength, 3)))
 
 
-timestampList, ambientPressureList, altitudeList = orSimDataReader.readORSimData(parameters.orDataFileName, parameters.burnDuration, parameters.orDataReductionFactor)
+timestampList, ambientPressureList, altitudeList = orSimDataReader.readORSimData(parameters.orDataFileName, parameters.maxBurnDuration, parameters.orDataReductionFactor)
 
 burnTime = None
 thrustList = []
@@ -66,7 +66,7 @@ for i in range(len(timestampList)):
 		thrust = 0
 		if burnTime is None:
 			burnTime = timestampList[i]
-			print("\nearly burnout at t=" + str(round(burnTime, 2)) + ", remaining fuel mass: " + str(round(fuelTank.getFluidMass()*1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getFluidMass()*1000, 1)) + "g")
+			print("\nburnout at t=" + str(round(burnTime, 2)) + ", remaining fuel mass: " + str(round(fuelTank.getFluidMass()*1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getFluidMass()*1000, 1)) + "g")
 	else:
 		thrust = engine.getThrust(ambientPressureList[i] * 10**5)
 		thrustNum += 1
@@ -78,7 +78,7 @@ for i in range(len(timestampList)):
 avgThrust = thrustSum / thrustNum
 
 if burnTime is None:
-	burnTime = parameters.burnDuration
-	print("\npropellant remaining at burnout, remaining fuel mass: " + str(round(fuelTank.getFluidMass()*1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getFluidMass()*1000, 1)) + "g")
+	burnTime = parameters.maxBurnDuration
+	print("\nmax. burn time reached, remaining fuel mass: " + str(round(fuelTank.getFluidMass()*1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getFluidMass()*1000, 1)) + "g")
 
 orEngineFileWriter.writeEngineFile(burnTime, avgThrust, maxThrust, propulsionSystemLength, wetMass, dryMass, timestampList, cgList, thrustList, massList)

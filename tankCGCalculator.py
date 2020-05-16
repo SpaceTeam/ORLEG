@@ -31,7 +31,7 @@ def calculateTankMass(tankDiameter, tankLength, tankPressure):
 
 
 def calculateTankCG(propellantMassFlowRate, timestampList):
-	usablePropellantMassLaunch = propellantMassFlowRate * parameters.burnDuration  # Operational Propellant Mass
+	usablePropellantMassLaunch = propellantMassFlowRate * parameters.maxBurnDuration  # Operational Propellant Mass
 	usableOxidizerMassLaunch = usablePropellantMassLaunch * (parameters.oxidizerFuelRatio / (1 + parameters.oxidizerFuelRatio))  # Usable Oxidizer Mass
 	oxidizerMassFlowRate = propellantMassFlowRate * (parameters.oxidizerFuelRatio / (1 + parameters.oxidizerFuelRatio))  # Oxidizer Massflow
 	usableFuelMassLaunch = usablePropellantMassLaunch - usableOxidizerMassLaunch  # Usable Fuel Mass
@@ -40,12 +40,12 @@ def calculateTankCG(propellantMassFlowRate, timestampList):
 	oxidizerDeadMass = totalOxidizerMassLaunch - usableOxidizerMassLaunch  # Oxidizer Dead Mass
 	totalFuelMassLaunch = usableFuelMassLaunch * (1 + parameters.deadFuelMassFraction)  # Total Fuel Mass
 	fuelDeadMass = totalFuelMassLaunch - usableFuelMassLaunch  # Fuel Dead Mass
-	oxidizerDensity = PropsSI('D', 'Q', parameters.oxidizerTankGasFraction, 'T', parameters.oxidizerTankTemperature, parameters.oxidizerType)  # Oxidizer Density
+	oxidizerDensity = PropsSI('D', 'Q', parameters.oxidizerTankGasFraction, 'T', parameters.oxidizerTemperature, parameters.oxidizerType)  # Oxidizer Density
 	if parameters.fuelType == "EthanolWater":
 		fuelType = 'Ethanol[0.7]&Water[0.3]'  # FIXME calculate mole fractions
 	else:
 		fuelType = parameters.fuelType
-	fuelDensity = PropsSI('D', 'P', parameters.fuelTankPressure, 'T', parameters.fuelTankTemperature, fuelType)  # Fuel Density
+	fuelDensity = PropsSI('D', 'P', parameters.fuelTankPressure, 'T', parameters.fuelTemperature, fuelType)  # Fuel Density
 	tankArea = 0.25 * numpy.pi * parameters.tankDiameter ** 2  # Tank Area
 	totalOxidizerVolume = totalOxidizerMassLaunch / oxidizerDensity  # Total Oxidizer Volume
 	totalFuelVolume = totalFuelMassLaunch / fuelDensity  # Total Fuel Volume
