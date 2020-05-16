@@ -55,10 +55,10 @@ class Engine(object):
 		print("    referenceThrust: " + str(self.referenceThrust))
 		print("    engineEfficiency: " + str(self.engineEfficiency))
 		print("Engine Output Parameters:")
-		print("    areaRatio: " + str(self.areaRatio))
-		print("    referenceIsp: " + str(self.referenceIsp))
-		print("    massFlow: " + str(self.massFlowRate))
-		print("    combustionTemperature: " + str(self.combustionTemperature))
+		print("    areaRatio: " + str(round(self.areaRatio, 2)))
+		print("    referenceIsp: " + str(round(self.referenceIsp, 2)))
+		print("    massFlow: " + str(round(self.massFlowRate, 3)))
+		print("    combustionTemperature: " + str(round(self.combustionTemperature, 1)))
 
 	def getExhaustVelocity(self, ambientPressure=None, oxidizerFuelRatio=None, chamberPressure=None):
 		if ambientPressure is None:
