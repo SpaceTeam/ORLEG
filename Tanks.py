@@ -42,7 +42,7 @@ class MassObject(object):
 		totalMass = 0
 		for massObject in massObjectList:
 			try:
-				mass = massObject.getPressurantMass()
+				mass = massObject.getGasMass()
 			except AttributeError:
 				mass = 0
 			totalMass += mass
@@ -66,75 +66,80 @@ class MassObject(object):
 		return sum / MassObject.calculateTotalMass(massObjectList)
 
 
-class Tank(MassObject):
-	def __init__(self, tankVolume, tankLength, tankMass, fluidType, fluidTemperature, pressurantType, pressurantTemperature, fillLevel, tankPressure):
+class GasLiquidTank(MassObject):
+	def __init__(self, tankVolume, tankLength, tankMass, liquidType, liquidTemperature, gasType, gasTemperature, fillLevel, tankPressure):
 		# static values
 		self.tankVolume = tankVolume
 		self.tankLength = tankLength
 		self.tankMass = tankMass
-		self.fluidType = fluidType
+		self.liquidType = liquidType
 
 		# assumed static values
-		self.fluidTemperature = fluidTemperature
-		self.pressurantType = pressurantType
-		self.pressurantTemperature = pressurantTemperature
-		self.fluidDensity = PropsSI('D', 'P', tankPressure, 'T', self.fluidTemperature, self.fluidType)
+		self.liquidTemperature = liquidTemperature
+		self.gasType = gasType
+		self.gasTemperature = gasTemperature
+		self.liquidDensity = PropsSI('D', 'P', tankPressure, 'T', self.liquidTemperature, self.liquidType)
 
 		# dynamic values
-		self.fluidMass = self.tankVolume * fillLevel * self.fluidDensity
-		self.pressurantMass = self.tankVolume * (1 - fillLevel) * PropsSI('D', 'P', tankPressure, 'T', self.pressurantTemperature, self.pressurantType)
+		self.liquidMass = self.tankVolume * fillLevel * self.liquidDensity
+		self.gasMass = self.tankVolume * (1 - fillLevel) * PropsSI('D', 'P', tankPressure, 'T', self.gasTemperature, self.gasType)
 
 	def getTankMass(self):
 		return self.tankMass
 
-	def getFluidMass(self):
-		return self.fluidMass
+	def getLiquidMass(self):
+		return self.liquidMass
 
-	def getPressurantMass(self):
-		return self.pressurantMass
+	def getGasMass(self):
+		return self.gasMass
 
 	def getMass(self):
-		return self.tankMass + self.fluidMass + self.pressurantMass
+		return self.tankMass + self.liquidMass + self.gasMass
 
 	def getCG(self):
 		tankCG = self.tankLength / 2
-		fluidCG = self.getFluidVolume() / self.tankVolume * tankCG
-		pressurantCG = self.tankLength - (self.getPressurantVolume() / self.tankVolume * tankCG)
-		return (tankCG * self.tankMass + fluidCG * self.fluidMass + pressurantCG * self.pressurantMass) / self.getMass()
+		liquidCG = self.getLiquidVolume() / self.tankVolume * tankCG
+		gasCG = self.tankLength - (self.getGasVolume() / self.tankVolume * tankCG)
+		return (tankCG * self.tankMass + liquidCG * self.liquidMass + gasCG * self.gasMass) / self.getMass()
 
 	def getLength(self):
 		return self.tankLength
 
-	def getFluidVolume(self):
-		return self.fluidMass / self.fluidDensity
+	def getLiquidVolume(self):
+		return self.liquidMass / self.liquidDensity
 
-	def getPressurantVolume(self):
-		return self.tankVolume - self.getFluidVolume()
+	def getGasVolume(self):
+		return self.tankVolume - self.getLiquidVolume()
 
-	def getPressurantDensity(self):
-		pressurantVolume = self.tankVolume - self.getFluidVolume()
-		return self.pressurantMass / pressurantVolume
+	def getGasDensity(self):
+		gasVolume = self.tankVolume - self.getLiquidVolume()
+		return self.gasMass / gasVolume
 
 	def getTankPressure(self):
-		pressurantDensity = self.pressurantMass / self.getPressurantVolume()
-		return PropsSI('P', 'D', pressurantDensity, 'T', self.pressurantTemperature, self.pressurantType)
+		gasDensity = self.gasMass / self.getGasVolume()
+		return PropsSI('P', 'D', gasDensity, 'T', self.gasTemperature, self.gasType)
 
-	def removeFluidMass(self, removedFluidMass):  # FIXME: isotherm, not realistic
-		if removedFluidMass >= self.fluidMass:
-			removedFluidMass = self.fluidMass
-		self.fluidMass -= removedFluidMass
-		return removedFluidMass
+	def removeLiquidMass(self, removedLiquidMass):  # FIXME: isotherm, not realistic
+		if removedLiquidMass >= self.liquidMass:
+			removedLiquidMass = self.liquidMass
+		self.liquidMass -= removedLiquidMass
+		return removedLiquidMass
 
-	def removeFluidMassKeepTankPressure(self, removedFluidMass):
+	def removeLiquidMassKeepTankPressure(self, removedLiquidMass):
 		oldTankPressure = self.getTankPressure()
-		removedFluidMass = self.removeFluidMass(removedFluidMass)
-		addedPressurantMass = self.setTankPressure(oldTankPressure)
-		return removedFluidMass, addedPressurantMass
+		removedLiquidMass = self.removeLiquidMass(removedLiquidMass)
+		addedGasMass = self.setTankPressure(oldTankPressure)
+		return removedLiquidMass, addedGasMass
 
-	def addPressurantMass(self, addedPressurantMass):  # FIXME: isotherm, not realistic
-		self.pressurantMass += addedPressurantMass
+	def addGasMass(self, addedGasMass):  # FIXME: isotherm, not realistic
+		self.gasMass += addedGasMass
 
 	def setTankPressure(self, tankPressure):  # FIXME: isotherm, not realistic
-		oldPressurantMass = self.pressurantMass
-		self.pressurantMass = self.getPressurantVolume() * PropsSI('D', 'P', tankPressure, 'T', self.pressurantTemperature, self.pressurantType)
-		return self.pressurantMass - oldPressurantMass
+		oldGasMass = self.gasMass
+		self.gasMass = self.getGasVolume() * PropsSI('D', 'P', tankPressure, 'T', self.gasTemperature, self.gasType)
+		return self.gasMass - oldGasMass
+
+
+class GasTank(GasLiquidTank):
+	def __init__(self, tankVolume, tankLength, tankMass, gasType, gasTemperature, tankPressure):
+		super().__init__(tankVolume=tankVolume, tankLength=tankLength, tankMass=tankMass, liquidType='Water', liquidTemperature=300, gasType=gasType, gasTemperature=gasTemperature, fillLevel=0, tankPressure=tankPressure)
