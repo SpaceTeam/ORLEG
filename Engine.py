@@ -1,3 +1,5 @@
+from engcoolprop.ec_fluid import EC_Fluid
+from rocketcea.blends import makeCardForNewTemperature
 from rocketcea.cea_obj_w_units import CEA_Obj
 from rocketcea.cea_obj import add_new_fuel
 
@@ -6,10 +8,12 @@ g0 = 9.81
 
 class Engine(object):
 
-	def __init__(self, name, fuelType, oxidizerType, oxidizerFuelRatio, chamberPressure, referenceAmbientPressure, referenceThrust, engineEfficiency, waterFraction=0.0, contractionRatio=2.5):
+	def __init__(self, name, fuelType, fuelTemperature, oxidizerType, oxidizerTemperature, oxidizerFuelRatio, chamberPressure, referenceAmbientPressure, referenceThrust, engineEfficiency, waterFraction=0.0, contractionRatio=2.5):
 		self.name = name
 		self.fuelType = fuelType
+		self.fuelTemperature = fuelTemperature
 		self.oxidizerType = oxidizerType
+		self.oxidizerTemperature = oxidizerTemperature
 		self.oxidizerFuelRatio = oxidizerFuelRatio
 		self.chamberPressure = chamberPressure
 		self.referenceAmbientPressure = referenceAmbientPressure
@@ -25,7 +29,27 @@ class Engine(object):
 			"""
 			add_new_fuel('EthanolWater', card_str)
 
-		self.cea = CEA_Obj(oxName=self.oxidizerType, fuelName=self.fuelType, useFastLookup=0, makeOutput=0, fac_CR=contractionRatio,
+		# set fuel temperature, see https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
+		fuelStd = EC_Fluid(symbol=self.fuelType)
+		fuelStd.setProps(T=536.7, Q=0)  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
+		fuel = EC_Fluid(symbol=self.fuelType)
+		fuel.setProps(T=self.fuelTemperature*9/5, Q=0)
+		dT = fuel.T - fuelStd.T
+		dH = fuel.H - fuelStd.H
+		CpAve = abs(dH / dT)
+		self.fuelCard = makeCardForNewTemperature(ceaName=self.fuelType, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04)
+
+		# same for oxidizer
+		oxidizerStd = EC_Fluid(symbol=self.oxidizerType)
+		oxidizerStd.setProps(T=536.7, Q=0)  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
+		oxidizer = EC_Fluid(symbol=self.oxidizerType)
+		oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0)
+		dT = oxidizer.T - oxidizerStd.T
+		dH = oxidizer.H - oxidizerStd.H
+		CpAve = abs(dH / dT)
+		self.oxidizerCard = makeCardForNewTemperature(ceaName=self.oxidizerType, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04)
+
+		self.cea = CEA_Obj(oxName=self.oxidizerCard, fuelName=self.fuelCard, useFastLookup=0, makeOutput=0, fac_CR=contractionRatio,
 			isp_units='m/sec', cstar_units='m/sec', pressure_units='Pa', temperature_units='K',
 			sonic_velocity_units='m/sec', enthalpy_units='J/kg', density_units='kg/m^3', specific_heat_units='J/kg-K')
 
@@ -58,6 +82,8 @@ class Engine(object):
 		print("    areaRatio: " + str(round(self.areaRatio, 2)))
 		print("    referenceIsp: " + str(round(self.referenceIsp, 2)))
 		print("    massFlow: " + str(round(self.massFlowRate, 3)))
+		print("    fuelMassFlow: " + str(round(self.fuelMassFlowRate, 3)))
+		print("    oxidizerMassFlow: " + str(round(self.oxMassFlowRate, 3)))
 		print("    combustionTemperature: " + str(round(self.combustionTemperature, 1)))
 
 	def getExhaustVelocity(self, ambientPressure=None, oxidizerFuelRatio=None, chamberPressure=None):

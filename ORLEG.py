@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+from CoolProp.CoolProp import PropsSI
 from inputFiles import parameters
 from Engine import Engine
 import orSimDataReader
@@ -7,16 +7,23 @@ from Tanks import MassObject, GasLiquidTank, GasTank
 import orEngineFileWriter
 
 
-engine = Engine(parameters.name, parameters.fuelType, parameters.oxidizerType, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency, parameters.waterFraction)
+engine = Engine(parameters.name, parameters.fuelType, parameters.fuelTemperature, parameters.oxidizerType, parameters.oxidizerTemperature, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency, parameters.waterFraction)
 engine.printParameters()
+
+fuelDensity = PropsSI('D', 'P', parameters.fuelTankPressure, 'T', parameters.fuelTemperature, parameters.fuelType)
+oxidizerDensity = PropsSI('D', 'P', parameters.oxidizerTankPressure, 'T', parameters.oxidizerTemperature, parameters.oxidizerType)
+fuelVolumeFlowRate = engine.fuelMassFlowRate / fuelDensity
+oxidizerVolumeFlowRate = engine.oxMassFlowRate / oxidizerDensity
+print("    fuelVolumeFlow: " + str(round(fuelVolumeFlowRate * 10**6, 1)) + "ml/s")
+print("    oxidizerVolumeFlow: " + str(round(oxidizerVolumeFlowRate * 10**6, 1)) + "ml/s")
 
 engineBay = MassObject(mass=1.9, length=0.14, cg=0)
 oxTank = GasLiquidTank(tankVolume=2.04*10**-3, tankLength=0.34, tankMass=1.05, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.90, tankPressure=parameters.oxidizerTankPressure)
 oxPress = MassObject(mass=0.3, length=0.16)
-oxPressTank = GasTank(tankVolume=0.8*10**-3, tankLength=0.2, tankMass=0.7, gasTemperature=293, gasType='Nitrogen', tankPressure=250*10**5)
+oxPressTank = GasTank(tankVolume=0.8*10**-3, tankLength=0.2, tankMass=0.7, gasTemperature=parameters.oxidizerPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.oxidizerPressurantTankPressure)
 fuelTank = GasLiquidTank(tankVolume=0.73*10**-3, tankLength=0.10, tankMass=0.4, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.95, tankPressure= parameters.fuelTankPressure)
 fuelPress = MassObject(mass=0.3, length=0.16)
-fuelPressTank = GasTank(tankVolume=0.25*10**-3, tankLength=0.2, tankMass=0.34, gasTemperature=293, gasType='Nitrogen', tankPressure=250*10**5)
+fuelPressTank = GasTank(tankVolume=0.25*10**-3, tankLength=0.2, tankMass=0.34, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
 
 componentList = [engineBay, oxTank, oxPress, oxPressTank, fuelTank, fuelPress, fuelPressTank]
 
