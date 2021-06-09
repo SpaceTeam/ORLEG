@@ -19,14 +19,14 @@ referenceAmbientPressure = 1.0 * 10**5  # Pa
 # Engine thrust at reference ambient pressure
 referenceThrust = 500  # N
 # Efficiency factor, scales ISP
-engineEfficiency = 0.90
+engineEfficiency = 0.80
 
 ########################################################################################################################
 # Simulation Parameters
 ########################################################################################################################
 
 # Maximum burn duration, engine gets switched off afterwards
-maxBurnDuration = 8  # s
+maxBurnDuration = 10  # s
 
 ########################################################################################################################
 # Propellant Tank Parameters
@@ -37,8 +37,8 @@ fuelTemperature = 20 + 273.15  # K
 fuelTankPressure = 30 * 10**5  # Pa
 fuelPressurantTemperature = 25 + 273.15  # K
 fuelPressurantTankPressure = 270 * 10**5  # Pa
-oxidizerTemperature = 5 + 273.15  # K
-oxidizerTankPressure = 45 * 10 ** 5  # Pa
+oxidizerTemperature = 3 + 273.15  # K
+oxidizerTankPressure = 40 * 10 ** 5  # Pa
 oxidizerPressurantTemperature = 25 + 273.15  # K
 oxidizerPressurantTankPressure = 270 * 10**5  # Pa
 

@@ -17,12 +17,12 @@ oxidizerVolumeFlowRate = engine.oxMassFlowRate / oxidizerDensity
 print("    fuelVolumeFlow: " + str(round(fuelVolumeFlowRate * 10**6, 1)) + "ml/s")
 print("    oxidizerVolumeFlow: " + str(round(oxidizerVolumeFlowRate * 10**6, 1)) + "ml/s")
 
-engineBay = MassObject(mass=1.9, length=0.14, cg=0)
-oxTank = GasLiquidTank(tankVolume=2.04*10**-3, tankLength=0.34, tankMass=1.05, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)
-oxPress = MassObject(mass=0.3, length=0.16)
+engineBay = MassObject(mass=1.055, length=0.26, cg=None)
+oxTank = GasLiquidTank(tankVolume=2.35*10**-3, tankLength=0.322, tankMass=1.0, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)
+oxPress = MassObject(mass=0.4, length=0.104)
 oxPressTank = GasTank(tankVolume=0.8*10**-3, tankLength=0.2, tankMass=0.7, gasTemperature=parameters.oxidizerPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.oxidizerPressurantTankPressure)
-fuelTank = GasLiquidTank(tankVolume=0.74*10**-3, tankLength=0.10, tankMass=0.4, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.98, tankPressure= parameters.fuelTankPressure)
-fuelPress = MassObject(mass=0.3, length=0.16)
+fuelTank = GasLiquidTank(tankVolume=0.86*10**-3, tankLength=0.18, tankMass=0.4, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.98, tankPressure=parameters.fuelTankPressure)
+fuelPress = MassObject(mass=0.17, length=0.09)
 fuelPressTank = GasTank(tankVolume=0.25*10**-3, tankLength=0.2, tankMass=0.34, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
 
 componentList = [engineBay, oxTank, oxPress, oxPressTank, fuelTank, fuelPress, fuelPressTank]
