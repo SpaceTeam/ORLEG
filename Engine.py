@@ -40,16 +40,16 @@ class Engine(object):
 		self.fuelCard = makeCardForNewTemperature(ceaName=self.fuelType, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04)
 
 		# same for oxidizer
-		oxidizerStd = EC_Fluid(symbol=self.oxidizerType)
-		oxidizerStd.setProps(T=536.7, Q=0)  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
-		oxidizer = EC_Fluid(symbol=self.oxidizerType)
-		oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0)
-		dT = oxidizer.T - oxidizerStd.T
-		dH = oxidizer.H - oxidizerStd.H
-		CpAve = abs(dH / dT)
-		self.oxidizerCard = makeCardForNewTemperature(ceaName=self.oxidizerType, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04)
+#		oxidizerStd = EC_Fluid(symbol=self.oxidizerType)
+#		oxidizerStd.setProps(T=536.7, Q=0)  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
+#		oxidizer = EC_Fluid(symbol=self.oxidizerType)
+#		oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0)
+#		dT = oxidizer.T - oxidizerStd.T
+#		dH = oxidizer.H - oxidizerStd.H
+#		CpAve = abs(dH / dT)
+#		self.oxidizerCard = makeCardForNewTemperature(ceaName=self.oxidizerType, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04)
 
-		self.cea = CEA_Obj(oxName=self.oxidizerCard, fuelName=self.fuelCard, useFastLookup=0, makeOutput=0, fac_CR=contractionRatio,
+		self.cea = CEA_Obj(oxName=self.oxidizerType, fuelName=self.fuelCard, useFastLookup=0, makeOutput=0, fac_CR=contractionRatio,
 			isp_units='m/sec', cstar_units='m/sec', pressure_units='Pa', temperature_units='K',
 			sonic_velocity_units='m/sec', enthalpy_units='J/kg', density_units='kg/m^3', specific_heat_units='J/kg-K')
 
