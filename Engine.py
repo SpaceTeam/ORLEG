@@ -1,3 +1,4 @@
+from math import sqrt, pi
 from engcoolprop.ec_fluid import EC_Fluid
 from rocketcea.blends import makeCardForNewTemperature
 from rocketcea.cea_obj_w_units import CEA_Obj
@@ -66,6 +67,13 @@ class Engine(object):
 		self.oxMassFlowRate = self.massFlowRate / (self.oxidizerFuelRatio + 1) * self.oxidizerFuelRatio
 
 		self.combustionTemperature = self.cea.get_Tcomb(self.chamberPressure, self.oxidizerFuelRatio)
+		self.cStar = self.cea.get_Cstar(self.chamberPressure, self.oxidizerFuelRatio)
+
+		(_, velocityThroat, _) = self.cea.get_SonicVelocities(Pc=self.chamberPressure, MR=self.oxidizerFuelRatio, eps=self.areaRatio)
+		(_, densityThroat, _) = self.cea.get_Densities(Pc=self.chamberPressure, MR=self.oxidizerFuelRatio, eps=self.areaRatio)
+		throatArea = self.massFlowRate / densityThroat / velocityThroat
+		self.throatDiameter = 2 * sqrt(throatArea / pi)
+		self.nozzleDiameter = 2 * sqrt(throatArea * self.areaRatio / pi)
 
 	def printParameters(self):
 		print("")
@@ -74,17 +82,20 @@ class Engine(object):
 		print("    fuelType: " + self.fuelType)
 		print("    oxidizerType: " + self.oxidizerType)
 		print("    oxidizerFuelRatio: " + str(self.oxidizerFuelRatio))
-		print("    chamberPressure: " + str(self.chamberPressure))
-		print("    referenceAmbientPressure: " + str(self.referenceAmbientPressure))
-		print("    referenceThrust: " + str(self.referenceThrust))
+		print("    chamberPressure: " + str(self.chamberPressure / 1e5) + ' bar')
+		print("    referenceThrust: " + str(self.referenceThrust) + ' N')
+		print("    referenceAmbientPressure: " + str(self.referenceAmbientPressure / 1e5) + ' bar')
 		print("    engineEfficiency: " + str(self.engineEfficiency))
 		print("Engine Output Parameters:")
+		print("    throatDiameter: " + str(round(self.throatDiameter * 1000, 2)) + ' mm')
+		print("    nozzleDiameter: " + str(round(self.nozzleDiameter * 1000, 2)) + ' mm')
 		print("    areaRatio: " + str(round(self.areaRatio, 2)))
-		print("    referenceIsp: " + str(round(self.referenceIsp, 2)))
-		print("    massFlow: " + str(round(self.massFlowRate, 3)))
-		print("    fuelMassFlow: " + str(round(self.fuelMassFlowRate, 3)))
-		print("    oxidizerMassFlow: " + str(round(self.oxMassFlowRate, 3)))
-		print("    combustionTemperature: " + str(round(self.combustionTemperature, 1)))
+		print("    combustionTemperature: " + str(round(self.combustionTemperature, 2)) + ' K')
+		print("    c*: " + str(round(self.cStar, 2)) + ' m/s')
+		print("    referenceIsp: " + str(round(self.referenceIsp, 2)) + ' s')
+		print("    massFlow: " + str(round(self.massFlowRate, 3)) + ' kg/s')
+		print("    fuelMassFlow: " + str(round(self.fuelMassFlowRate * 1e3, 2)) + ' g/s')
+		print("    oxidizerMassFlow: " + str(round(self.oxMassFlowRate * 1e3, 2)) + ' g/s')
 
 	def getExhaustVelocity(self, ambientPressure=None, oxidizerFuelRatio=None, chamberPressure=None):
 		if ambientPressure is None:
@@ -98,7 +109,7 @@ class Engine(object):
 		if expansionMode == 'Separated':
 			print("WARNING: Flow separation in nozzle!")
 
-		ve *= self.engineEfficiency
+		ve *= self.engineEfficiency  # FIXME: only used here, not for general C* efficiency
 
 		return ve
 

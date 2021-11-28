@@ -13,13 +13,13 @@ oxidizerType = "N2O"
 # Mixture Ratio (O/F mass flow)
 oxidizerFuelRatio = 3.0
 # Chamber Pressure
-chamberPressure = 10.0 * 10**5  # Pa
+chamberPressure = 11.0 * 1e5  # Pa
 # Reference ambient pressure
-referenceAmbientPressure = 1.0 * 10**5  # Pa
+referenceAmbientPressure = 1.0 * 1e5  # Pa
 # Engine thrust at reference ambient pressure
 referenceThrust = 500  # N
 # Efficiency factor, scales ISP
-engineEfficiency = 0.80
+engineEfficiency = 0.8
 
 ########################################################################################################################
 # Simulation Parameters
@@ -33,14 +33,14 @@ maxBurnDuration = 10  # s
 ########################################################################################################################
 
 # Propellant Storage Conditions
-fuelTemperature = 20 + 273.15  # K
-fuelTankPressure = 30 * 10**5  # Pa
-fuelPressurantTemperature = 25 + 273.15  # K
-fuelPressurantTankPressure = 270 * 10**5  # Pa
+fuelTemperature = 15 + 273.15  # K
+fuelTankPressure = 30 * 1e5  # Pa
+fuelPressurantTemperature = 20 + 273.15  # K
+fuelPressurantTankPressure = 270 * 1e5  # Pa
 oxidizerTemperature = 3 + 273.15  # K
-oxidizerTankPressure = 40 * 10 ** 5  # Pa
-oxidizerPressurantTemperature = 25 + 273.15  # K
-oxidizerPressurantTankPressure = 270 * 10**5  # Pa
+oxidizerTankPressure = 40 * 1e5  # Pa
+oxidizerPressurantTemperature = 20 + 273.15  # K
+oxidizerPressurantTankPressure = 270 * 1e5  # Pa
 
 ########################################################################################################################
 # Input Data Settings
@@ -63,6 +63,6 @@ engineName = 'Amalia 8s'
 # Producer
 engineManufacturer = 'TXV'
 # Displayed System Diameter
-displayedSystemDiameter = 0.12  # m
+displayedSystemDiameter = 0.06  # m
 # Automatic Mass Calculation
 automaticMassCalculation = 0
