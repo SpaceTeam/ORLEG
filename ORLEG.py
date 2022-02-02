@@ -8,13 +8,15 @@ import orEngineFileWriter
 
 engine = Engine(parameters.name, parameters.fuelType, parameters.fuelTemperature, parameters.oxidizerType, parameters.oxidizerTemperature, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency, parameters.waterFraction)
 
-engineBay = MassObject(mass=1.055, length=0.26, cg=None)
-oxTank = GasLiquidTank(tankVolume=2.4*10**-3, tankLength=0.322, tankMass=1.0, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)
-oxPress = MassObject(mass=0.4, length=0.104)
-oxPressTank = GasTank(tankVolume=0.8*10**-3, tankLength=0.2, tankMass=0.7, gasTemperature=parameters.oxidizerPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.oxidizerPressurantTankPressure)
-fuelTank = GasLiquidTank(tankVolume=0.9*10**-3, tankLength=0.18, tankMass=0.4, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.98, tankPressure=parameters.fuelTankPressure)
-fuelPress = MassObject(mass=0.17, length=0.09)
-fuelPressTank = GasTank(tankVolume=0.25*10**-3, tankLength=0.2, tankMass=0.34, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
+engineBay = MassObject(mass=1.180, length=0.294, cg=0.180)
+oxTank = GasLiquidTank(tankVolume=2400e-6, tankLength=0.387, tankMass=1.170, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Aluminium
+#oxTank = GasLiquidTank(tankVolume=2400e-6, tankLength=0.387, tankMass=1.925, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Steel
+oxPress = MassObject(mass=0.4, length=0.095)
+oxPressTank = GasTank(tankVolume=800e-6, tankLength=0.196, tankMass=0.7, gasTemperature=parameters.oxidizerPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.oxidizerPressurantTankPressure)
+fuelTank = GasLiquidTank(tankVolume=900e-6, tankLength=0.192, tankMass=0.594, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.98, tankPressure=parameters.fuelTankPressure)  # Aluminium
+#fuelTank = GasLiquidTank(tankVolume=900e-6, tankLength=0.192, tankMass=0.876, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.98, tankPressure=parameters.fuelTankPressure)  # Steel
+fuelPress = MassObject(mass=0.156, length=0.072)
+fuelPressTank = GasTank(tankVolume=250e-6, tankLength=0.2, tankMass=0.34, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
 
 componentList = [engineBay, oxTank, oxPress, oxPressTank, fuelTank, fuelPress, fuelPressTank]
 

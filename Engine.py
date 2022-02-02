@@ -21,7 +21,7 @@ class Engine(object):
 		self.referenceThrust = referenceThrust
 		self.engineEfficiency = engineEfficiency
 
-		if fuelType == "EthanolWater":
+		if fuelType == "EthanolWater":  # TODO: use cea.newFuelBlend()?
 			card_str = """
 			fuel C2H5OH(L)   C 2 H 6 O 1   wt%=""" + str(100.0 - waterFraction) + """
 			h,cal=-66370.0     t(k)=298.15
@@ -67,11 +67,9 @@ class Engine(object):
 		self.oxMassFlowRate = self.massFlowRate / (self.oxidizerFuelRatio + 1) * self.oxidizerFuelRatio
 
 		self.combustionTemperature = self.cea.get_Tcomb(self.chamberPressure, self.oxidizerFuelRatio)
-		self.cStar = self.cea.get_Cstar(self.chamberPressure, self.oxidizerFuelRatio)
+		self.cStar = self.cea.get_Cstar(self.chamberPressure, self.oxidizerFuelRatio) * self.engineEfficiency  # FIXME: improve?
 
-		(_, velocityThroat, _) = self.cea.get_SonicVelocities(Pc=self.chamberPressure, MR=self.oxidizerFuelRatio, eps=self.areaRatio)
-		(_, densityThroat, _) = self.cea.get_Densities(Pc=self.chamberPressure, MR=self.oxidizerFuelRatio, eps=self.areaRatio)
-		throatArea = self.massFlowRate / densityThroat / velocityThroat
+		throatArea = self.massFlowRate * self.cStar / self.chamberPressure
 		self.throatDiameter = 2 * sqrt(throatArea / pi)
 		self.nozzleDiameter = 2 * sqrt(throatArea * self.areaRatio / pi)
 
@@ -87,12 +85,12 @@ class Engine(object):
 		print("    referenceAmbientPressure: " + str(self.referenceAmbientPressure / 1e5) + ' bar')
 		print("    engineEfficiency: " + str(self.engineEfficiency))
 		print("Engine Output Parameters:")
-		print("    throatDiameter: " + str(round(self.throatDiameter * 1000, 2)) + ' mm')
-		print("    nozzleDiameter: " + str(round(self.nozzleDiameter * 1000, 2)) + ' mm')
+		print("    throatDiameter: " + str(round(self.throatDiameter * 1000, 1)) + ' mm')
+		print("    nozzleDiameter: " + str(round(self.nozzleDiameter * 1000, 1)) + ' mm')
 		print("    areaRatio: " + str(round(self.areaRatio, 2)))
-		print("    combustionTemperature: " + str(round(self.combustionTemperature, 2)) + ' K')
-		print("    c*: " + str(round(self.cStar, 2)) + ' m/s')
-		print("    referenceIsp: " + str(round(self.referenceIsp, 2)) + ' s')
+		print("    combustionTemperature: " + str(round(self.combustionTemperature, 1)) + ' K')
+		print("    c*: " + str(round(self.cStar, 1)) + ' m/s')
+		print("    referenceIsp: " + str(round(self.referenceIsp, 1)) + ' s')
 		print("    massFlow: " + str(round(self.massFlowRate, 3)) + ' kg/s')
 		print("    fuelMassFlow: " + str(round(self.fuelMassFlowRate * 1e3, 2)) + ' g/s')
 		print("    oxidizerMassFlow: " + str(round(self.oxMassFlowRate * 1e3, 2)) + ' g/s')
@@ -109,7 +107,7 @@ class Engine(object):
 		if expansionMode == 'Separated':
 			print("WARNING: Flow separation in nozzle!")
 
-		ve *= self.engineEfficiency  # FIXME: only used here, not for general C* efficiency
+		ve *= self.engineEfficiency  # FIXME: improve?
 
 		return ve
 
