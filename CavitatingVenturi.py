@@ -15,10 +15,11 @@ class CavitatingVenturi(object):
 
 		self.vapor_pressure = ps('P', 'Q', 1, 'T', self.temperature, self.fluid)
 		self.throat_area = ((self.throat_diameter / 2) ** 2) * math.pi
+		self.density = ps('D', 'P', 1e5, 'T', self.temperature, self.fluid)
 
 	def getMassFlow(self, pressure):
-		density = ps('D', 'P', pressure, 'T', self.temperature, self.fluid)
-		return self.discharge_coefficient * self.throat_area * math.sqrt(2 * density * (pressure - self.vapor_pressure))
+		self.density = ps('D', 'P', pressure, 'T', self.temperature, self.fluid)
+		return self.discharge_coefficient * self.throat_area * math.sqrt(2 * self.density * (pressure - self.vapor_pressure))
 
 
 if __name__ == "__main__":
