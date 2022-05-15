@@ -19,7 +19,7 @@ referenceAmbientPressure = 1.0 * 1e5  # Pa
 # Engine thrust at reference ambient pressure
 referenceThrust = 500  # N
 # Efficiency factor, scales ISP
-engineEfficiency = 0.8
+engineEfficiency = 0.81
 
 ########################################################################################################################
 # Simulation Parameters

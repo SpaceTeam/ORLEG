@@ -111,8 +111,10 @@ class Engine(object):
 
 		return ve
 
-	def getThrust(self, ambientPressure=None, massFlowRate=None, oxidizerFuelRatio=None, chamberPressure=None): # TODO if no chamber pressure is given, use C* to calculate
+	def getThrust(self, ambientPressure=None, massFlowRate=None, oxidizerFuelRatio=None, chamberPressure=None):
 		if massFlowRate is None:
 			massFlowRate = self.massFlowRate
+		if chamberPressure is None:
+			chamberPressure = self.cStar * massFlowRate / ((self.throatDiameter / 2)**2 * pi)
 
 		return massFlowRate * self.getExhaustVelocity(ambientPressure, oxidizerFuelRatio, chamberPressure)

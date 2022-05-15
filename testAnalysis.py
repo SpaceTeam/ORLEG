@@ -11,7 +11,7 @@ from InjectorFlashingFlow import InjectorFlashingFlow
 from CavitatingVenturi import CavitatingVenturi
 
 
-logFile = '~/Downloads/uHoubolt15042022_2.csv'
+logFile = '~/Downloads/hotfire.csv'
 
 
 logData = pd.read_csv(logFile, sep=',', header=0)
@@ -25,10 +25,20 @@ logData.index = logData.index - logData.index[0]
 logData.interpolate(method='time', inplace=True)
 logData.fillna(method='backfill', inplace=True)
 
-# switch time to seconds, add offset
+# switch time to seconds, cut, add offset
 logData.index = logData.index.total_seconds()
-logData.index = logData.index - 5.6
+N = 450*300
+logData.drop(index=logData.index[:N], axis=0, inplace=True)
+N = 20*300
+logData.drop(logData.tail(N).index, inplace=True)
+logData.index = logData.index - 451.5
 
+
+logData['ox_injector_pressure:sensor'] = logData['ox_tank_pressure:sensor']
+for index in logData.index:
+    logData['ox_injector_pressure:sensor'][index] = logData['ox_injector_pressure:sensor'][index] if logData['ox_injector_pressure:sensor'][index] < 42.0 else 0
+
+logData['scale:sensor'] = logData['scale:sensor'] * 0.160468920392585 - 19.2367253326063
 
 logData['fuel_main_valve:sensor'] *= 100 / 65535
 logData['ox_main_valve:sensor'] *= 100 / 65535
@@ -41,19 +51,19 @@ logData['ox_main_valve:sensor'] *= 100 / 65535
 fuelVenturi = CavitatingVenturi(fluid='ethanol', temperature=273+25, throat_diameter=1.1e-3, discharge_coefficient=0.89)
 fuelMassFlows = []
 for fuelInjectorPressure in logData['fuel_injector_pressure:sensor']:
-    fuelMassFlows.append(fuelVenturi.getMassFlow((fuelInjectorPressure + 1) * 1e5) * 1e3 if fuelInjectorPressure > 24.5 else 0)
+    fuelMassFlows.append(fuelVenturi.getMassFlow((fuelInjectorPressure + 1) * 1e5) * 1e3 if fuelInjectorPressure > 23.9 else 0)
 logData['fuel_massflow'] = fuelMassFlows
 
-oxInjector = InjectorFlashingFlow(fluid='CO2', vapor_pressure=30e5, orifice_length=11e-3, orifice_diameter=1.4e-3, orifice_count=4, discharge_coefficient=0.71)
+oxInjector = InjectorFlashingFlow(fluid='N2O', vapor_pressure=30e5, orifice_length=11e-3, orifice_diameter=1.4e-3, orifice_count=4, discharge_coefficient=0.71)
 oxMassFlows = []
 for oxInjectorPressure in logData['ox_injector_pressure:sensor']:
-    oxMassFlows.append(oxInjector.getMassFlow((oxInjectorPressure + 1) * 1e5) * 1e3 if oxInjectorPressure > 32.0 else 0)
+    oxMassFlows.append(oxInjector.getMassFlow((oxInjectorPressure + 1) * 1e5) * 1e3 if oxInjectorPressure > 30.0 else 0)
 logData['ox_massflow'] = oxMassFlows
 
-throatArea = (8e-3 / 2) ** 2 * math.pi
+throatArea = (18e-3 / 2) ** 2 * math.pi
 totalMassFlow = (logData['fuel_massflow'] + logData['ox_massflow']) * 1e-3
-c_star = logData['chamber_pressure:sensor'] * 1e5 * throatArea / totalMassFlow
-logData['c_star'] = c_star
+cStar = logData['chamber_pressure:sensor'] * 1e5 * throatArea / totalMassFlow
+logData['c_star'] = cStar
 
 fuelMass_g = trapz(logData['fuel_massflow'], logData.index)
 fuelVolume_ml = fuelMass_g / fuelVenturi.density * 1e3
@@ -63,7 +73,7 @@ oxMass_g = trapz(logData['ox_massflow'], logData.index)
 oxVolume_ml = oxMass_g * oxInjector.v_l0 * 1e3
 print("Total ox mass:", round(oxMass_g, 1), "g, total volume:", round(oxVolume_ml, 1), "ml")
 
-engine = Engine(name='Amalia', fuelType='Ethanol', fuelTemperature=fuelVenturi.temperature, oxidizerType="N2O", oxidizerTemperature=oxInjector.liquid_temperature, oxidizerFuelRatio=(oxMass_g / fuelMass_g), chamberPressure=11.0 * 1e5, referenceAmbientPressure=1e5, referenceThrust=500, engineEfficiency=0.8)
+engine = Engine(name='Amalia', fuelType='Ethanol', fuelTemperature=fuelVenturi.temperature, oxidizerType="N2O", oxidizerTemperature=oxInjector.liquid_temperature, oxidizerFuelRatio=(oxMass_g / fuelMass_g), chamberPressure=11.0 * 1e5, referenceAmbientPressure=1e5, referenceThrust=500, engineEfficiency=0.81)
 thrust = []
 for index in logData.index:
     fuelMassFlow = logData['fuel_massflow'][index] * 1e-3
@@ -94,11 +104,11 @@ plt.grid(visible=True, which='minor', axis='both', linestyle=':', color='grey')
 plt.minorticks_on()
 plt.xlim([logData.index[0], logData.index[-1]])
 
-#logData['fuel_main_valve:sensor'].plot(label='Fuel Main Valve / %', secondary_y=True)
-#logData['ox_main_valve:sensor'].plot(label='Ox Main Valve / %', secondary_y=True)
+logData['fuel_main_valve:sensor'].plot(label='Fuel Main Valve / %', secondary_y=True)
+logData['ox_main_valve:sensor'].plot(label='Ox Main Valve / %', secondary_y=True)
 
 plt.subplot(2, 1, 2)
-plt.title("Calculated Values")
+plt.title("Other Values")
 
 logData['fuel_massflow'].plot(label='Fuel Mass Flow (calculated) / g/s')
 logData['ox_massflow'].plot(label='Ox Mass Flow (calculated) / g/s')
@@ -106,6 +116,8 @@ logData['ox_massflow'].plot(label='Ox Mass Flow (calculated) / g/s')
 logData['c_star'].plot(label='C* (calculated) / m/s')
 
 logData['thrust'].plot(label='Thrust (calculated) / N')
+
+logData['scale:sensor'].plot(label='Thrust / N')
 
 plt.legend()
 plt.grid(visible=True, which='major', axis='both', linestyle='-', color='grey')
