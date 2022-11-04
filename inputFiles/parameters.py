@@ -13,31 +13,31 @@ oxidizerType = "N2O"
 # Mixture Ratio (O/F mass flow)
 oxidizerFuelRatio = 3.0
 # Chamber Pressure
-chamberPressure = 11.0 * 1e5  # Pa
+chamberPressure = 15.0 * 1e5  # Pa
 # Reference ambient pressure
 referenceAmbientPressure = 1.0 * 1e5  # Pa
 # Engine thrust at reference ambient pressure
-referenceThrust = 500  # N
+referenceThrust = 650  # N
 # Efficiency factor, scales ISP
-engineEfficiency = 0.81
+engineEfficiency = 0.75
 
 ########################################################################################################################
 # Simulation Parameters
 ########################################################################################################################
 
 # Maximum burn duration, engine gets switched off afterwards
-maxBurnDuration = 10  # s
+maxBurnDuration = 10.0  # s
 
 ########################################################################################################################
 # Propellant Tank Parameters
 ########################################################################################################################
 
 # Propellant Storage Conditions
-fuelTemperature = 15 + 273.15  # K
+fuelTemperature = 25 + 273.15  # K
 fuelTankPressure = 30 * 1e5  # Pa
-fuelPressurantTemperature = 20 + 273.15  # K
+fuelPressurantTemperature = 25 + 273.15  # K
 fuelPressurantTankPressure = 270 * 1e5  # Pa
-oxidizerTemperature = 3 + 273.15  # K
+oxidizerTemperature = 0 + 273.15  # K
 oxidizerTankPressure = 40 * 1e5  # Pa
 oxidizerPressurantTemperature = 20 + 273.15  # K
 oxidizerPressurantTankPressure = 270 * 1e5  # Pa
