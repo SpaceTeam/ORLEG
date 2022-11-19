@@ -72,20 +72,7 @@ class Engine(object):
         self.waterFraction = waterFraction
 
         self.add_fuel_to_cea_if_custom()
-
-        # set fuel temperature, see https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
-        fuelStd = EC_Fluid(symbol=self.fuelType.value)
-        fuelStd.setProps(
-            T=536.7, Q=0
-        )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
-        fuel = EC_Fluid(symbol=self.fuelType.value)
-        fuel.setProps(T=self.fuelTemperature * 9 / 5, Q=0)
-        dT = fuel.T - fuelStd.T
-        dH = fuel.H - fuelStd.H
-        CpAve = abs(dH / dT)
-        self.fuelCard = makeCardForNewTemperature(
-            ceaName=self.fuelType.value, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04
-        )
+        self.set_fuelcard_for_temperature()
 
         # same for oxidizer
         oxidizerStd = EC_Fluid(symbol=self.oxidizerType.value)
@@ -159,6 +146,26 @@ class Engine(object):
                     weight_percent_water=self.waterFraction,
                 ),
             )
+
+    def set_fuelcard_for_temperature(self):
+        """Set generate new fuel card for the given fuel temperature.
+        Store it in self.fuelCard
+        
+        See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
+        """
+        fuelStd = EC_Fluid(symbol=self.fuelType.value)
+        fuelStd.setProps(
+            T=536.7, Q=0
+        )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
+        fuel = EC_Fluid(symbol=self.fuelType.value)
+        fuel.setProps(T=self.fuelTemperature * 9 / 5, Q=0)
+        dT = fuel.T - fuelStd.T
+        dH = fuel.H - fuelStd.H
+        CpAve = abs(dH / dT)
+        self.fuelCard = makeCardForNewTemperature(
+            ceaName=self.fuelType.value, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04 # TODO: Why this standard?
+        )
+
 
     def printParameters(self):
         print(
