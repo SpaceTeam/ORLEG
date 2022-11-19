@@ -219,12 +219,9 @@ class Engine(object):
     def getExhaustVelocity(
         self, ambientPressure=None, oxidizerFuelRatio=None, chamberPressure=None
     ):
-        if ambientPressure is None:
-            ambientPressure = self.referenceAmbientPressure
-        if oxidizerFuelRatio is None:
-            oxidizerFuelRatio = self.oxidizerFuelRatio
-        if chamberPressure is None:
-            chamberPressure = self.chamberPressure
+        ambientPressure = ambientPressure or self.referenceAmbientPressure
+        oxidizerFuelRatio = oxidizerFuelRatio or self.oxidizerFuelRatio
+        chamberPressure = chamberPressure or self.chamberPressure
 
         (ve, expansionMode) = self.cea.estimate_Ambient_Isp(
             chamberPressure, oxidizerFuelRatio, self.areaRatio, ambientPressure
@@ -243,12 +240,10 @@ class Engine(object):
         oxidizerFuelRatio=None,
         chamberPressure=None,
     ):
-        if massFlowRate is None:
-            massFlowRate = self.massFlowRate
-        if chamberPressure is None:
-            chamberPressure = (
-                self.cStar * massFlowRate / ((self.throatDiameter / 2) ** 2 * pi)
-            )
+        massFlowRate = massFlowRate or self.massFlowRate
+        chamberPressure = chamberPressure or (
+            self.cStar * massFlowRate / ((self.throatDiameter / 2) ** 2 * pi)
+        )
 
         return massFlowRate * self.getExhaustVelocity(
             ambientPressure, oxidizerFuelRatio, chamberPressure
