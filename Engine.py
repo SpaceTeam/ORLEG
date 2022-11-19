@@ -1,4 +1,7 @@
 from math import sqrt, pi
+from enum import Enum
+from typing import Union
+
 from engcoolprop.ec_fluid import EC_Fluid
 from rocketcea.blends import makeCardForNewTemperature
 from rocketcea.cea_obj_w_units import CEA_Obj
@@ -7,21 +10,54 @@ from rocketcea.cea_obj import add_new_fuel
 g0 = 9.81
 
 
+class FuelCardTemplates:
+    ETHANOL_WATER = """
+			fuel C2H5OH(L)   C 2 H 6 O 1   wt%={weight_percent_ethanol}
+			h,cal=-66370.0     t(k)=298.15
+			fuel water   H 2 O 1   wt%={weight_percent_water}
+			h,cal=-68308.0     t(k)=298.15     rho,g/cc = 0.9998
+			"""
+
+class CEAFuelType(Enum):
+    """One of RocketCEA supported fuel types
+    see https://rocketcea.readthedocs.io/en/latest/propellants.html
+    """
+    Ethanol = "Ethanol"
+
+class CEAOxidizerType(Enum):
+    """One of RocketCEA supported oxidizer types
+    see https://rocketcea.readthedocs.io/en/latest/propellants.html
+    """
+    N2O = "N2O"
+
+class TKelvin(float):
+    """Temperature value in Kelvin."""
+
+class PPascal(float):
+    """Pressure in Pascal."""
+
+class FNewton(float):
+    """Force in Newton"""
+
+class CustomFuels(Enum):
+    ETHANOL_WATER = "EthanolWater"
+
+
 class Engine(object):
     def __init__(
         self,
-        name,
-        fuelType,
-        fuelTemperature,
-        oxidizerType,
-        oxidizerTemperature,
-        oxidizerFuelRatio,
-        chamberPressure,
-        referenceAmbientPressure,
-        referenceThrust,
-        engineEfficiency,
-        waterFraction=0.0,
-        contractionRatio=2.5,
+        name: str,
+        fuelType: Union[CustomFuels, CEAFuelType],
+        fuelTemperature: TKelvin,
+        oxidizerType: CEAOxidizerType,
+        oxidizerTemperature: TKelvin,
+        oxidizerFuelRatio: float,
+        chamberPressure: PPascal,
+        referenceAmbientPressure: PPascal,
+        referenceThrust: FNewton,
+        engineEfficiency: float,
+        waterFraction: float=0.0,
+        contractionRatio: float=2.5,
     ):
         self.name = name
         self.fuelType = fuelType
@@ -34,47 +70,41 @@ class Engine(object):
         self.referenceThrust = referenceThrust
         self.engineEfficiency = engineEfficiency
 
-        if fuelType == "EthanolWater":  # TODO: use cea.newFuelBlend()?
-            card_str = (
-                """
-			fuel C2H5OH(L)   C 2 H 6 O 1   wt%="""
-                + str(100.0 - waterFraction)
-                + """
-			h,cal=-66370.0     t(k)=298.15
-			fuel water   H 2 O 1   wt%="""
-                + str(waterFraction)
-                + """
-			h,cal=-68308.0     t(k)=298.15     rho,g/cc = 0.9998
-			"""
+        if fuelType == CustomFuels.ETHANOL_WATER:  # TODO: use cea.newFuelBlend()?
+            add_new_fuel(
+                fuelType.value,
+                FuelCardTemplates.ETHANOL_WATER.format(
+                    weight_percent_ethanol=100 - waterFraction,
+                    weight_percent_water=waterFraction,
+                ),
             )
-            add_new_fuel("EthanolWater", card_str)
 
         # set fuel temperature, see https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
-        fuelStd = EC_Fluid(symbol=self.fuelType)
+        fuelStd = EC_Fluid(symbol=self.fuelType.value)
         fuelStd.setProps(
             T=536.7, Q=0
         )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
-        fuel = EC_Fluid(symbol=self.fuelType)
+        fuel = EC_Fluid(symbol=self.fuelType.value)
         fuel.setProps(T=self.fuelTemperature * 9 / 5, Q=0)
         dT = fuel.T - fuelStd.T
         dH = fuel.H - fuelStd.H
         CpAve = abs(dH / dT)
         self.fuelCard = makeCardForNewTemperature(
-            ceaName=self.fuelType, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04
+            ceaName=self.fuelType.value, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04
         )
 
         # same for oxidizer
-        oxidizerStd = EC_Fluid(symbol=self.oxidizerType)
+        oxidizerStd = EC_Fluid(symbol=self.oxidizerType.value)
         oxidizerStd.setProps(
             T=536.7, Q=0
         )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
-        oxidizer = EC_Fluid(symbol=self.oxidizerType)
+        oxidizer = EC_Fluid(symbol=self.oxidizerType.value)
         oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0)
         dT = oxidizer.T - oxidizerStd.T
         dH = oxidizer.H - oxidizerStd.H
         CpAve = abs(dH / dT)
         self.oxidizerCard = makeCardForNewTemperature(
-            ceaName=self.oxidizerType, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04
+            ceaName=self.oxidizerType.value, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04
         )
 
         self.cea = CEA_Obj(
@@ -129,8 +159,8 @@ class Engine(object):
         Engine Input Parameters:
         ------------------------
             Name: {self.name}
-            fuelType: {self.fuelType}
-            oxidizerType: {self.oxidizerType}")
+            fuelType: {self.fuelType.value}
+            oxidizerType: {self.oxidizerType.value}")
             oxidizerFuelRatio: {self.oxidizerFuelRatio}
             chamberPressure: {self.chamberPressure / 1e5} bar
             referenceThrust: {self.referenceThrust} N

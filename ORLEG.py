@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from inputFiles import parameters
-from Engine import Engine
+from Engine import Engine, CEAFuelType, CEAOxidizerType
 import orSimDataReader
 from Tanks import MassObject, GasLiquidTank, GasTank
 import orEngineFileWriter
@@ -8,9 +8,9 @@ import orEngineFileWriter
 
 engine = Engine(
     parameters.name,
-    parameters.fuelType,
+    CEAFuelType(parameters.fuelType),
     parameters.fuelTemperature,
-    parameters.oxidizerType,
+    CEAOxidizerType(parameters.oxidizerType),
     parameters.oxidizerTemperature,
     parameters.oxidizerFuelRatio,
     parameters.chamberPressure,
