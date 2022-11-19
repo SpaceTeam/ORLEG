@@ -69,15 +69,9 @@ class Engine(object):
         self.referenceAmbientPressure = referenceAmbientPressure
         self.referenceThrust = referenceThrust
         self.engineEfficiency = engineEfficiency
+        self.waterFraction = waterFraction
 
-        if fuelType == CustomFuels.ETHANOL_WATER:  # TODO: use cea.newFuelBlend()?
-            add_new_fuel(
-                fuelType.value,
-                FuelCardTemplates.ETHANOL_WATER.format(
-                    weight_percent_ethanol=100 - waterFraction,
-                    weight_percent_water=waterFraction,
-                ),
-            )
+        self.add_fuel_to_cea_if_custom()
 
         # set fuel temperature, see https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
         fuelStd = EC_Fluid(symbol=self.fuelType.value)
@@ -152,6 +146,19 @@ class Engine(object):
         throatArea = self.massFlowRate * self.cStar / self.chamberPressure
         self.throatDiameter = 2 * sqrt(throatArea / pi)
         self.nozzleDiameter = 2 * sqrt(throatArea * self.areaRatio / pi)
+
+    def add_fuel_to_cea_if_custom(self):
+        """If fuel type is no standard one, then generate
+        a new fuel card and add the fuel to RocketCEA.
+        """
+        if self.fuelType == CustomFuels.ETHANOL_WATER:  # TODO: use cea.newFuelBlend()?
+            add_new_fuel(
+                self.fuelType.value,
+                FuelCardTemplates.ETHANOL_WATER.format(
+                    weight_percent_ethanol=100 - self.waterFraction,
+                    weight_percent_water=self.waterFraction,
+                ),
+            )
 
     def printParameters(self):
         print(
