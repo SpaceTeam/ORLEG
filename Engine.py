@@ -70,26 +70,12 @@ class Engine(object):
         self.referenceThrust = referenceThrust
         self.engineEfficiency = engineEfficiency
         self.waterFraction = waterFraction
+        self.contractionRatio = contractionRatio
 
         self.add_fuel_to_cea_if_custom()
         self.set_fuelcard_for_temperature()
         self.set_oxcard_for_temperature()
-
-        self.cea = CEA_Obj(
-            oxName=self.oxidizerCard,
-            fuelName=self.fuelCard,
-            useFastLookup=0,
-            makeOutput=0,
-            fac_CR=contractionRatio,
-            isp_units="m/sec",
-            cstar_units="m/sec",
-            pressure_units="Pa",
-            temperature_units="K",
-            sonic_velocity_units="m/sec",
-            enthalpy_units="J/kg",
-            density_units="kg/m^3",
-            specific_heat_units="J/kg-K",
-        )
+        self.set_cea()
 
         self.areaRatio = self.cea.get_eps_at_PcOvPe(
             Pc=self.chamberPressure,
@@ -171,6 +157,26 @@ class Engine(object):
         CpAve = abs(dH / dT)
         self.oxidizerCard = makeCardForNewTemperature(
             ceaName=self.oxidizerType.value, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04
+        )
+
+    def set_cea(self):
+        """Create instance of CEA_Obj with correct units
+        and store it in self.cea
+        """
+        self.cea = CEA_Obj(
+            oxName=self.oxidizerCard,
+            fuelName=self.fuelCard,
+            useFastLookup=0,
+            makeOutput=0,
+            fac_CR=self.contractionRatio,
+            isp_units="m/sec",
+            cstar_units="m/sec",
+            pressure_units="Pa",
+            temperature_units="K",
+            sonic_velocity_units="m/sec",
+            enthalpy_units="J/kg",
+            density_units="kg/m^3",
+            specific_heat_units="J/kg-K",
         )
 
 
