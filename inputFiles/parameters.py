@@ -57,11 +57,11 @@ orDataReductionFactor = 1
 ########################################################################################################################
 
 # Output File Name
-engineFileName = 'outputFiles/Amalia_8s.rse'
+engineFileName = "outputFiles/Amalia_8s.rse"
 # Rocket Engine Name
-engineName = 'Amalia 8s'
+engineName = "Amalia 8s"
 # Producer
-engineManufacturer = 'TXV'
+engineManufacturer = "TXV"
 # Displayed System Diameter
 displayedSystemDiameter = 0.06  # m
 # Automatic Mass Calculation
