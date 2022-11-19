@@ -82,22 +82,24 @@ fuelVolumeFlowRate = engine.fuelMassFlowRate / fuelTank.liquidDensity
 oxidizerVolumeFlowRate = engine.oxMassFlowRate / oxTank.liquidDensity
 
 engine.printParameters()
-print(f"    fuelVolumeFlow: {fuelVolumeFlowRate * 1e6:.2f} +  ml/s")
-print(f"    oxidizerVolumeFlow: {oxidizerVolumeFlowRate * 1e6:.2f} ml/s")
-print("Propulsion System Parameters:")
-print(f"    Oxidizer mass: {oxTank.liquidMass:.3f} kg")
-print(f"    Fuel mass: {fuelTank.liquidMass:.3f} kg")
-print(f"    Oxidizer density: {oxTank.liquidDensity:.1f} kg/m³")
-print(f"    Fuel density: {fuelTank.liquidDensity:.1f} kg/m³")
 print(
-    f"    Pressurant mass: {oxPressTank.gasMass + fuelPressTank.gasMass + oxTank.gasMass + fuelTank.gasMass:.3f} kg"
+    f"""  
+		fuelVolumeFlow: {fuelVolumeFlowRate * 1e6:.2f} +  ml/s
+		oxidizerVolumeFlow: {oxidizerVolumeFlowRate * 1e6:.2f} ml/s
+
+	Propulsion System Parameters:
+	-----------------------------
+		Oxidizer mass: {oxTank.liquidMass:.3f} kg
+		Fuel mass: {fuelTank.liquidMass:.3f} kg
+		Oxidizer density: {oxTank.liquidDensity:.1f} kg/m³
+		Fuel density: {fuelTank.liquidDensity:.1f} kg/m³
+		Pressurant mass: {oxPressTank.gasMass + fuelPressTank.gasMass + oxTank.gasMass + fuelTank.gasMass:.3f} kg
+		Structural mass: {MassObject.calculateTotalStructuralMass(componentList):.3f} kg
+		Dry mass: {dryMass:.3f} kg
+		Wet mass: {wetMass:.3f} kg
+		Length: {propulsionSystemLength:.3f} m
+	"""
 )
-print(
-    f"    Structural mass: {MassObject.calculateTotalStructuralMass(componentList):.3f} kg"
-)
-print(f"    Dry mass: {dryMass:.3f} kg")
-print(f"    Wet mass: {wetMass:.3f} kg")
-print(f"    Length: {propulsionSystemLength:.3f} m")
 
 
 timestampList, ambientPressureList, altitudeList = orSimDataReader.readORSimData(
