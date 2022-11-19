@@ -124,42 +124,28 @@ class Engine(object):
         self.nozzleDiameter = 2 * sqrt(throatArea * self.areaRatio / pi)
 
     def printParameters(self):
-        print("")
-        print("Engine Input Parameters:")
-        print("    Name: " + self.name)
-        print("    fuelType: " + self.fuelType)
-        print("    oxidizerType: " + self.oxidizerType)
-        print("    oxidizerFuelRatio: " + str(self.oxidizerFuelRatio))
-        print("    chamberPressure: " + str(self.chamberPressure / 1e5) + " bar")
-        print("    referenceThrust: " + str(self.referenceThrust) + " N")
+        print(f"")
+        print(f"Engine Input Parameters:")
+        print(f"    Name: {self.name}")
+        print(f"    fuelType: {self.fuelType}")
+        print(f"    oxidizerType: {self.oxidizerType}")
+        print(f"    oxidizerFuelRatio: {self.oxidizerFuelRatio}")
+        print(f"    chamberPressure: {self.chamberPressure / 1e5} bar")
+        print(f"    referenceThrust: {self.referenceThrust} N")
         print(
-            "    referenceAmbientPressure: "
-            + str(self.referenceAmbientPressure / 1e5)
-            + " bar"
+            f"    referenceAmbientPressure: {self.referenceAmbientPressure / 1e5} bar"
         )
-        print("    engineEfficiency: " + str(self.engineEfficiency))
-        print("Engine Output Parameters:")
-        print(
-            "    throatDiameter: " + str(round(self.throatDiameter * 1000, 1)) + " mm"
-        )
-        print(
-            "    nozzleDiameter: " + str(round(self.nozzleDiameter * 1000, 1)) + " mm"
-        )
-        print("    areaRatio: " + str(round(self.areaRatio, 2)))
-        print(
-            "    combustionTemperature: "
-            + str(round(self.combustionTemperature, 1))
-            + " K"
-        )
-        print("    c*: " + str(round(self.cStar, 1)) + " m/s")
-        print("    referenceIsp: " + str(round(self.referenceIsp, 1)) + " s")
-        print("    massFlow: " + str(round(self.massFlowRate, 3)) + " kg/s")
-        print(
-            "    fuelMassFlow: " + str(round(self.fuelMassFlowRate * 1e3, 2)) + " g/s"
-        )
-        print(
-            "    oxidizerMassFlow: " + str(round(self.oxMassFlowRate * 1e3, 2)) + " g/s"
-        )
+        print(f"    engineEfficiency: {self.engineEfficiency}")
+        print(f"Engine Output Parameters:")
+        print(f"    throatDiameter: {self.throatDiameter * 1000:.1f} mm")
+        print(f"    nozzleDiameter: {self.nozzleDiameter * 1000:.1f} mm")
+        print(f"    areaRatio: {self.areaRatio:.2f}")
+        print(f"    combustionTemperature: {self.combustionTemperature:.1f} K")
+        print(f"    c*: {self.cStar:.1f} m/s")
+        print(f"    referenceIsp: {self.referenceIsp:.1f} s")
+        print(f"    massFlow: {self.massFlowRate:.3f} kg/s")
+        print(f"    fuelMassFlow: {self.fuelMassFlowRate * 1e3:.2f} g/s")
+        print(f"    oxidizerMassFlow: {self.oxMassFlowRate * 1e3:.2f} g/s")
 
     def getExhaustVelocity(
         self, ambientPressure=None, oxidizerFuelRatio=None, chamberPressure=None
