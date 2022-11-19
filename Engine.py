@@ -18,26 +18,34 @@ class FuelCardTemplates:
 			h,cal=-68308.0     t(k)=298.15     rho,g/cc = 0.9998
 			"""
 
+
 class CEAFuelType(Enum):
     """One of RocketCEA supported fuel types
     see https://rocketcea.readthedocs.io/en/latest/propellants.html
     """
+
     Ethanol = "Ethanol"
+
 
 class CEAOxidizerType(Enum):
     """One of RocketCEA supported oxidizer types
     see https://rocketcea.readthedocs.io/en/latest/propellants.html
     """
+
     N2O = "N2O"
+
 
 class TKelvin(float):
     """Temperature value in Kelvin."""
 
+
 class PPascal(float):
     """Pressure in Pascal."""
 
+
 class FNewton(float):
     """Force in Newton"""
+
 
 class CustomFuels(Enum):
     ETHANOL_WATER = "EthanolWater"
@@ -56,8 +64,8 @@ class Engine(object):
         referenceAmbientPressure: PPascal,
         referenceThrust: FNewton,
         engineEfficiency: float,
-        waterFraction: float=0.0,
-        contractionRatio: float=2.5,
+        waterFraction: float = 0.0,
+        contractionRatio: float = 2.5,
     ):
         self.name = name
         self.fuelType = fuelType
@@ -76,25 +84,22 @@ class Engine(object):
         self.set_fuelcard_for_temperature()
         self.set_oxcard_for_temperature()
         self.set_cea()
+        self.calc_params()
 
+    def calc_params(self):
+        """Calcuclate all derived parameters."""
         self.areaRatio = self.cea.get_eps_at_PcOvPe(
             Pc=self.chamberPressure,
             MR=self.oxidizerFuelRatio,
             PcOvPe=(self.chamberPressure / self.referenceAmbientPressure),
         )
-
         self.exhaustVelocity = self.getExhaustVelocity()
-
         self.referenceIsp = self.exhaustVelocity / g0
-
         self.massFlowRate = self.referenceThrust / self.exhaustVelocity
-
         self.fuelMassFlowRate = self.massFlowRate / (self.oxidizerFuelRatio + 1)
-
         self.oxMassFlowRate = (
             self.massFlowRate / (self.oxidizerFuelRatio + 1) * self.oxidizerFuelRatio
         )
-
         self.combustionTemperature = self.cea.get_Tcomb(
             self.chamberPressure, self.oxidizerFuelRatio
         )
@@ -123,7 +128,7 @@ class Engine(object):
     def set_fuelcard_for_temperature(self):
         """Generate new fuel card for the given fuel temperature.
         Store it in self.fuelCard
-        
+
         See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
         """
         fuelStd = EC_Fluid(symbol=self.fuelType.value)
@@ -135,15 +140,17 @@ class Engine(object):
         dT = fuel.T - fuelStd.T
         dH = fuel.H - fuelStd.H
         CpAve = abs(dH / dT)
-        self.fuelCard = makeCardForNewTemperature( # TODO: Research card format and document it in extra type
-            ceaName=self.fuelType.value, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04 # TODO: Why this standard?
+        self.fuelCard = makeCardForNewTemperature(  # TODO: Research card format and document it in extra type
+            ceaName=self.fuelType.value,
+            newTdegR=fuel.T,
+            CpAve=CpAve,
+            MolWt=16.04,  # TODO: Why this standard?
         )
 
-    
     def set_oxcard_for_temperature(self):
         """Generate new oxidizer card for the given ox temperature.
         Store it in self.oxidizerCard
-        
+
         See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
         """
         oxidizerStd = EC_Fluid(symbol=self.oxidizerType.value)
@@ -156,7 +163,10 @@ class Engine(object):
         dH = oxidizer.H - oxidizerStd.H
         CpAve = abs(dH / dT)
         self.oxidizerCard = makeCardForNewTemperature(
-            ceaName=self.oxidizerType.value, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04
+            ceaName=self.oxidizerType.value,
+            newTdegR=oxidizer.T,
+            CpAve=CpAve,
+            MolWt=16.04,
         )
 
     def set_cea(self):
@@ -178,7 +188,6 @@ class Engine(object):
             density_units="kg/m^3",
             specific_heat_units="J/kg-K",
         )
-
 
     def printParameters(self):
         print(
