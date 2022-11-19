@@ -73,20 +73,7 @@ class Engine(object):
 
         self.add_fuel_to_cea_if_custom()
         self.set_fuelcard_for_temperature()
-
-        # same for oxidizer
-        oxidizerStd = EC_Fluid(symbol=self.oxidizerType.value)
-        oxidizerStd.setProps(
-            T=536.7, Q=0
-        )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
-        oxidizer = EC_Fluid(symbol=self.oxidizerType.value)
-        oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0)
-        dT = oxidizer.T - oxidizerStd.T
-        dH = oxidizer.H - oxidizerStd.H
-        CpAve = abs(dH / dT)
-        self.oxidizerCard = makeCardForNewTemperature(
-            ceaName=self.oxidizerType.value, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04
-        )
+        self.set_oxcard_for_temperature()
 
         self.cea = CEA_Obj(
             oxName=self.oxidizerCard,
@@ -148,7 +135,7 @@ class Engine(object):
             )
 
     def set_fuelcard_for_temperature(self):
-        """Set generate new fuel card for the given fuel temperature.
+        """Generate new fuel card for the given fuel temperature.
         Store it in self.fuelCard
         
         See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
@@ -162,8 +149,28 @@ class Engine(object):
         dT = fuel.T - fuelStd.T
         dH = fuel.H - fuelStd.H
         CpAve = abs(dH / dT)
-        self.fuelCard = makeCardForNewTemperature(
+        self.fuelCard = makeCardForNewTemperature( # TODO: Research card format and document it in extra type
             ceaName=self.fuelType.value, newTdegR=fuel.T, CpAve=CpAve, MolWt=16.04 # TODO: Why this standard?
+        )
+
+    
+    def set_oxcard_for_temperature(self):
+        """Generate new oxidizer card for the given ox temperature.
+        Store it in self.oxidizerCard
+        
+        See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
+        """
+        oxidizerStd = EC_Fluid(symbol=self.oxidizerType.value)
+        oxidizerStd.setProps(
+            T=536.7, Q=0
+        )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
+        oxidizer = EC_Fluid(symbol=self.oxidizerType.value)
+        oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0)
+        dT = oxidizer.T - oxidizerStd.T
+        dH = oxidizer.H - oxidizerStd.H
+        CpAve = abs(dH / dT)
+        self.oxidizerCard = makeCardForNewTemperature(
+            ceaName=self.oxidizerType.value, newTdegR=oxidizer.T, CpAve=CpAve, MolWt=16.04
         )
 
 
