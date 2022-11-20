@@ -1,6 +1,13 @@
 from math import sqrt, pi
-from enum import Enum
 from typing import Union
+from param_types import (
+    CEAFuelType,
+    CEAOxidizerType,
+    TKelvin,
+    PPascal,
+    FNewton,
+    CustomFuels,
+)
 
 from engcoolprop.ec_fluid import EC_Fluid
 from rocketcea.blends import makeCardForNewTemperature
@@ -17,38 +24,6 @@ class FuelCardTemplates:
 			fuel water   H 2 O 1   wt%={weight_percent_water}
 			h,cal=-68308.0     t(k)=298.15     rho,g/cc = 0.9998
 			"""
-
-
-class CEAFuelType(Enum):
-    """One of RocketCEA supported fuel types
-    see https://rocketcea.readthedocs.io/en/latest/propellants.html
-    """
-
-    Ethanol = "Ethanol"
-
-
-class CEAOxidizerType(Enum):
-    """One of RocketCEA supported oxidizer types
-    see https://rocketcea.readthedocs.io/en/latest/propellants.html
-    """
-
-    N2O = "N2O"
-
-
-class TKelvin(float):
-    """Temperature value in Kelvin."""
-
-
-class PPascal(float):
-    """Pressure in Pascal."""
-
-
-class FNewton(float):
-    """Force in Newton"""
-
-
-class CustomFuels(Enum):
-    ETHANOL_WATER = "EthanolWater"
 
 
 class Engine(object):
