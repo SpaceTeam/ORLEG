@@ -56,6 +56,10 @@ class PPascal(float):
     """Pressure in Pascal."""
 
 
+class DensityKGPCM(float):
+    """Density in kg/m³"""
+
+
 class FNewton(float):
     """Force in Newton"""
 

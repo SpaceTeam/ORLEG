@@ -7,6 +7,7 @@ from param_types import (
     CoolPropFluid,
     TKelvin,
     PPascal,
+    DensityKGPCM,
 )
 
 from CoolProp.CoolProp import PropsSI
@@ -18,9 +19,8 @@ class MassObject(object):
     ):
         """Object with mass.
 
-        :param cg: center of gravity
+        :param cg: center of gravity from bottom of object
         """
-        # TODO: find out if CG from back or front.
         self.mass = mass
         self.length = length
         if cg is None:
@@ -100,12 +100,14 @@ class GasLiquidTank(MassObject):
         gasTemperature: TKelvin,
         fillLevel: float,
         tankPressure: PPascal,
+        tankCG: LengthMeter = None,
     ):
         # static values
         self.tankVolume = tankVolume
         self.tankLength = tankLength
         self.tankMass = tankMass
         self.liquidType = liquidType
+        self.tankCG = tankCG or tankLength / 2
 
         # assumed static values
         self.liquidTemperature = liquidTemperature
@@ -135,63 +137,91 @@ class GasLiquidTank(MassObject):
         return self.gasMass
 
     def getMass(self):
+        """Sum of tank and fluid masses"""
         return self.tankMass + self.liquidMass + self.gasMass
 
-    def getCG(self):
-        tankCG = self.tankLength / 2
-        liquidCG = self.getLiquidVolume() / self.tankVolume * tankCG
-        gasCG = self.tankLength - (self.getGasVolume() / self.tankVolume * tankCG)
+    def getCG(self) -> LengthMeter:
+        """Calculate center of gravity for tank in combination with
+        gas and liquid.
+
+        :return: Distance of cg from bottom of tank.
+        """
+        liquid_fraction = self.getLiquidVolume() / self.tankVolume
+        gas_fraction = self.getGasVolume() / self.tankVolume
+        liquidCG = 0.5 * liquid_fraction * self.tankLength
+        gasCG = self.tankLength - 0.5 * gas_fraction * self.tankLength
         return (
-            tankCG * self.tankMass + liquidCG * self.liquidMass + gasCG * self.gasMass
+            self.tankCG * self.tankMass
+            + liquidCG * self.liquidMass
+            + gasCG * self.gasMass
         ) / self.getMass()
 
-    def getLength(self):
+    def getLength(self) -> LengthMeter:
         return self.tankLength
 
-    def getLiquidVolume(self):
+    def getLiquidVolume(self) -> VolumeCubicMeter:
         return self.liquidMass / self.liquidDensity
 
-    def getGasVolume(self):
+    def getGasVolume(self) -> VolumeCubicMeter:
         return self.tankVolume - self.getLiquidVolume()
 
-    def getGasDensity(self):
-        gasVolume = self.tankVolume - self.getLiquidVolume()
-        return self.gasMass / gasVolume
+    def getGasDensity(self) -> DensityKGPCM:
+        return self.gasMass / self.getGasVolume()
 
-    def getTankPressure(self):
-        gasDensity = self.gasMass / self.getGasVolume()
+    def getTankPressure(self) -> PPascal:
+        """Get pressure of gas with current density and volume."""
         return PropsSI(
-            "P", "D", gasDensity, "T", self.gasTemperature, self.gasType.value
+            "P", "D", self.getGasDensity(), "T", self.gasTemperature, self.gasType.value
         )
 
     def removeLiquidMass(
         self, removedLiquidMass: MassKiloGramm
-    ):  # FIXME: isotherm, not realistic
+    ) -> MassKiloGramm:  # FIXME: isotherm, not realistic
+        """Substract the given mass of the liquid mass
+        Will only remove what's left if trying to remove
+        more than what is left over.
+
+        :return: The removed liquid mass
+        """
         if removedLiquidMass >= self.liquidMass:
             removedLiquidMass = self.liquidMass
         self.liquidMass -= removedLiquidMass
         return removedLiquidMass
 
     def removeLiquidMassKeepTankPressure(self, removedLiquidMass: MassKiloGramm):
+        """Remove liquid mass and recalculate the gass mass
+        with the new gas volume.
+        """
         oldTankPressure = self.getTankPressure()
         removedLiquidMass = self.removeLiquidMass(removedLiquidMass)
         addedGasMass = self.setTankPressure(oldTankPressure)
         return removedLiquidMass, addedGasMass
 
     def addGasMass(self, addedGasMass: MassKiloGramm):  # FIXME: isotherm, not realistic
+        """Add the mass to self.gasMass"""
         self.gasMass += addedGasMass
 
     def setTankPressure(
-        self, tankPressure: MassKiloGramm
-    ):  # FIXME: isotherm, not realistic
+        self, tankPressure: PPascal
+    ) -> MassKiloGramm:  # FIXME: isotherm, not realistic
+        """Recalculate the gas mass with the given tank pressure
+        and set self.gasMass to the result.
+
+        :return: difference in gas mass       
+        """
         oldGasMass = self.gasMass
-        self.gasMass = self.getGasVolume() * PropsSI(
+        gasDensity = PropsSI(
             "D", "P", tankPressure, "T", self.gasTemperature, self.gasType.value
         )
+        self.gasMass = self.getGasVolume() * gasDensity
         return self.gasMass - oldGasMass
 
 
 class GasTank(GasLiquidTank):
+    """Childclass of GasLiquidTank that defaults
+    the fill level to 0 to represent a tank filled only
+    with gas.
+    """
     def __init__(
         self,
         tankVolume: VolumeCubicMeter,
