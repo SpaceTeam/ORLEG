@@ -27,6 +27,9 @@ class CoolPropFluid(Enum):
     """
 
     Nitrogen = "Nitrogen"
+    Ethanol = "Ethanol"
+    N2O = "N2O"
+    Water = "Water"
 
 
 class CEAFuelType(Enum):

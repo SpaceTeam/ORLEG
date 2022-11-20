@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from inputFiles import parameters
-from Engine import Engine, CEAFuelType, CEAOxidizerType
+from Engine import Engine
+from param_types import CEAFuelType, CEAOxidizerType, CoolPropFluid
 import orSimDataReader
 from Tanks import MassObject, GasLiquidTank, GasTank
 import orEngineFileWriter
@@ -25,9 +26,9 @@ oxTank = GasLiquidTank(
     tankVolume=2400e-6,
     tankLength=0.387,
     tankMass=1.170,
-    liquidType=parameters.oxidizerType,
+    liquidType=CoolPropFluid(parameters.oxidizerType),
     liquidTemperature=parameters.oxidizerTemperature,
-    gasType="Nitrogen",
+    gasType=CoolPropFluid("Nitrogen"),
     gasTemperature=240,
     fillLevel=0.95,
     tankPressure=parameters.oxidizerTankPressure,
@@ -39,16 +40,16 @@ oxPressTank = GasTank(
     tankLength=0.196,
     tankMass=0.7,
     gasTemperature=parameters.oxidizerPressurantTemperature,
-    gasType="Nitrogen",
+    gasType=CoolPropFluid("Nitrogen"),
     tankPressure=parameters.oxidizerPressurantTankPressure,
 )
 fuelTank = GasLiquidTank(
     tankVolume=900e-6,
     tankLength=0.192,
     tankMass=0.594,
-    liquidType=parameters.fuelType,
+    liquidType=CoolPropFluid(parameters.fuelType),
     liquidTemperature=parameters.fuelTemperature,
-    gasType="Nitrogen",
+    gasType=CoolPropFluid("Nitrogen"),
     gasTemperature=250,
     fillLevel=0.99,
     tankPressure=parameters.fuelTankPressure,
@@ -60,7 +61,7 @@ fuelPressTank = GasTank(
     tankLength=0.2,
     tankMass=0.34,
     gasTemperature=parameters.fuelPressurantTemperature,
-    gasType="Nitrogen",
+    gasType=CoolPropFluid("Nitrogen"),
     tankPressure=parameters.fuelPressurantTankPressure,
 )
 

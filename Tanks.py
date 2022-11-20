@@ -1,8 +1,26 @@
+from typing import List
+
+from param_types import (
+    VolumeCubicMeter,
+    LengthMeter,
+    MassKiloGramm,
+    CoolPropFluid,
+    TKelvin,
+    PPascal,
+)
+
 from CoolProp.CoolProp import PropsSI
 
 
 class MassObject(object):
-    def __init__(self, mass, length, cg=None):
+    def __init__(
+        self, mass: MassKiloGramm, length: LengthMeter, cg: LengthMeter = None
+    ):
+        """Object with mass.
+
+        :param cg: center of gravity
+        """
+        # TODO: find out if CG from back or front.
         self.mass = mass
         self.length = length
         if cg is None:
@@ -20,14 +38,14 @@ class MassObject(object):
         return self.length
 
     @staticmethod
-    def calculateTotalMass(massObjectList):
+    def calculateTotalMass(massObjectList: List["MassObject"]):
         totalMass = 0
         for massObject in massObjectList:
             totalMass += massObject.getMass()
         return totalMass
 
     @staticmethod
-    def calculateTotalStructuralMass(massObjectList):
+    def calculateTotalStructuralMass(massObjectList: List["MassObject"]):
         totalMass = 0
         for massObject in massObjectList:
             try:
@@ -38,7 +56,7 @@ class MassObject(object):
         return totalMass
 
     @staticmethod
-    def calculateTotalDryMass(massObjectList):
+    def calculateTotalDryMass(massObjectList: List["MassObject"]):
         totalMass = 0
         for massObject in massObjectList:
             try:
@@ -50,14 +68,14 @@ class MassObject(object):
         return totalMass
 
     @staticmethod
-    def calculateTotalLength(massObjectList):
+    def calculateTotalLength(massObjectList: List["MassObject"]):
         totalLength = 0
         for massObject in massObjectList:
             totalLength += massObject.getLength()
         return totalLength
 
     @staticmethod
-    def calculateTotalCG(massObjectList):
+    def calculateTotalCG(massObjectList: List["MassObject"]):
         sum = 0
         length = 0
         for massObject in massObjectList:
@@ -67,17 +85,21 @@ class MassObject(object):
 
 
 class GasLiquidTank(MassObject):
+    """Class to represent a tank that has a liquid stored
+    together with a gas (pressurant).
+    """
+
     def __init__(
         self,
-        tankVolume,
-        tankLength,
-        tankMass,
-        liquidType,
-        liquidTemperature,
-        gasType,
-        gasTemperature,
-        fillLevel,
-        tankPressure,
+        tankVolume: VolumeCubicMeter,
+        tankLength: LengthMeter,
+        tankMass: MassKiloGramm,
+        liquidType: CoolPropFluid,
+        liquidTemperature: TKelvin,
+        gasType: CoolPropFluid,
+        gasTemperature: TKelvin,
+        fillLevel: float,
+        tankPressure: PPascal,
     ):
         # static values
         self.tankVolume = tankVolume
@@ -90,7 +112,7 @@ class GasLiquidTank(MassObject):
         self.gasType = gasType
         self.gasTemperature = gasTemperature
         self.liquidDensity = PropsSI(
-            "D", "P", tankPressure, "T", self.liquidTemperature, self.liquidType
+            "D", "P", tankPressure, "T", self.liquidTemperature, self.liquidType.value
         )
 
         # dynamic values
@@ -98,7 +120,9 @@ class GasLiquidTank(MassObject):
         self.gasMass = (
             self.tankVolume
             * (1 - fillLevel)
-            * PropsSI("D", "P", tankPressure, "T", self.gasTemperature, self.gasType)
+            * PropsSI(
+                "D", "P", tankPressure, "T", self.gasTemperature, self.gasType.value
+            )
         )
 
     def getTankMass(self):
@@ -136,40 +160,52 @@ class GasLiquidTank(MassObject):
 
     def getTankPressure(self):
         gasDensity = self.gasMass / self.getGasVolume()
-        return PropsSI("P", "D", gasDensity, "T", self.gasTemperature, self.gasType)
+        return PropsSI(
+            "P", "D", gasDensity, "T", self.gasTemperature, self.gasType.value
+        )
 
-    def removeLiquidMass(self, removedLiquidMass):  # FIXME: isotherm, not realistic
+    def removeLiquidMass(
+        self, removedLiquidMass: MassKiloGramm
+    ):  # FIXME: isotherm, not realistic
         if removedLiquidMass >= self.liquidMass:
             removedLiquidMass = self.liquidMass
         self.liquidMass -= removedLiquidMass
         return removedLiquidMass
 
-    def removeLiquidMassKeepTankPressure(self, removedLiquidMass):
+    def removeLiquidMassKeepTankPressure(self, removedLiquidMass: MassKiloGramm):
         oldTankPressure = self.getTankPressure()
         removedLiquidMass = self.removeLiquidMass(removedLiquidMass)
         addedGasMass = self.setTankPressure(oldTankPressure)
         return removedLiquidMass, addedGasMass
 
-    def addGasMass(self, addedGasMass):  # FIXME: isotherm, not realistic
+    def addGasMass(self, addedGasMass: MassKiloGramm):  # FIXME: isotherm, not realistic
         self.gasMass += addedGasMass
 
-    def setTankPressure(self, tankPressure):  # FIXME: isotherm, not realistic
+    def setTankPressure(
+        self, tankPressure: MassKiloGramm
+    ):  # FIXME: isotherm, not realistic
         oldGasMass = self.gasMass
         self.gasMass = self.getGasVolume() * PropsSI(
-            "D", "P", tankPressure, "T", self.gasTemperature, self.gasType
+            "D", "P", tankPressure, "T", self.gasTemperature, self.gasType.value
         )
         return self.gasMass - oldGasMass
 
 
 class GasTank(GasLiquidTank):
     def __init__(
-        self, tankVolume, tankLength, tankMass, gasType, gasTemperature, tankPressure
+        self,
+        tankVolume: VolumeCubicMeter,
+        tankLength: LengthMeter,
+        tankMass: MassKiloGramm,
+        gasType: CoolPropFluid,
+        gasTemperature: TKelvin,
+        tankPressure: PPascal,
     ):
         super().__init__(
             tankVolume=tankVolume,
             tankLength=tankLength,
             tankMass=tankMass,
-            liquidType="Water",
+            liquidType=CoolPropFluid("Water"),
             liquidTemperature=300,
             gasType=gasType,
             gasTemperature=gasTemperature,
