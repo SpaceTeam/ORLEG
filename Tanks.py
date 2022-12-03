@@ -78,7 +78,11 @@ class GasLiquidTank(MassObject):
 		self.liquidTemperature = liquidTemperature
 		self.gasType = gasType
 		self.gasTemperature = gasTemperature
-		self.liquidDensity = PropsSI('D', 'P', tankPressure, 'T', self.liquidTemperature, self.liquidType)
+		if self.liquidType == "LOX":
+			self.liquidDensity = 1140
+		else:
+			self.liquidDensity = PropsSI('D', 'P', tankPressure, 'T', self.liquidTemperature, self.liquidType)
+#		self.liquidDensity = PropsSI('D', 'P', tankPressure, 'T', self.liquidTemperature, self.liquidType)
 
 		# dynamic values
 		self.liquidMass = self.tankVolume * fillLevel * self.liquidDensity
@@ -143,3 +147,4 @@ class GasLiquidTank(MassObject):
 class GasTank(GasLiquidTank):
 	def __init__(self, tankVolume, tankLength, tankMass, gasType, gasTemperature, tankPressure):
 		super().__init__(tankVolume=tankVolume, tankLength=tankLength, tankMass=tankMass, liquidType='Water', liquidTemperature=300, gasType=gasType, gasTemperature=gasTemperature, fillLevel=0, tankPressure=tankPressure)
+
