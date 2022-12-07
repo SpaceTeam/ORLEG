@@ -9,18 +9,18 @@ import math
 
 engine = Engine(parameters.name, parameters.fuelType, parameters.fuelTemperature, parameters.oxidizerType, parameters.oxidizerTemperature, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency, parameters.waterFraction)
 
-diameter = 0.135
+diameter = 0.123
 
-oxTankVolume = 5.7e-3   # 5.2liter
+oxTankVolume = 5.2e-3   # 5.2liter
 oxTanklength = oxTankVolume / (math.pi * (diameter/2)**2)
 
 oxPressTankVolume = 1.2e-3   # 5.2liter
 oxPressTanklength = oxPressTankVolume / (math.pi * (diameter/2)**2)
 
-fuelTankVolume = 4.4e-3		#4.0liter
+fuelTankVolume = 5.5e-3		#4.0liter
 fuelTankLength = fuelTankVolume / (math.pi * (diameter/2)**2)
 
-fuelPressTankVolume = 0.8e-3		#4.0liter
+fuelPressTankVolume = 1.0e-3		#4.0liter
 fuelPressTankLength = fuelPressTankVolume / (math.pi * (diameter/2)**2)
 
 
