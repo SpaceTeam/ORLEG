@@ -7,19 +7,19 @@ name = "Skuld"
 # Fuel
 fuelType = "Ethanol"
 # Water mass fraction in case of fueltype "EthanolWater"
-waterFraction = 20.0  # %
+waterFraction = 0.0  # %
 # Oxidizer
 oxidizerType = "LOX"
 # Mixture Ratio (O/F mass flow)
-oxidizerFuelRatio = 1.8
+oxidizerFuelRatio = 1.3
 # Chamber Pressure
-chamberPressure = 40.0 * 1e5  # Pa
+chamberPressure = 15.0 * 1e5  # Pa
 # Reference ambient pressure
 referenceAmbientPressure = 1.0 * 1e5  # Pa
 # Engine thrust at reference ambient pressure
 referenceThrust = 2000  # N
 # Efficiency factor, scales ISP
-engineEfficiency = 0.95
+engineEfficiency = 0.80
 
 ########################################################################################################################
 # Simulation Parameters
@@ -34,14 +34,16 @@ maxBurnDuration = 20.0  # s
 
 # Propellant Storage Conditions
 fuelTemperature = 20 + 273.15  # K
-fuelTankPressure = 60 * 10**5  # Pa
+fuelTankPressure = 30 * 10**5  # Pa
 fuelPressurantTemperature = 25 + 273.15  # K
 fuelPressurantTankPressure = 270 * 10**5  # Pa
+fuelPressHeadPressure = 10 * 10**5  # Pa
+
 oxidizerTemperature = -200 + 273.15  # K
-oxidizerTankPressure = 60 * 10 ** 5  # Pa
+oxidizerTankPressure = 30 * 10 ** 5  # Pa
 oxidizerPressurantTemperature = 25 + 273.15  # K
 oxidizerPressurantTankPressure = 270 * 10**5  # Pa
-
+oxidizerPressHeadPressure = 10 * 10**5  # Pa
 ########################################################################################################################
 # Input Data Settings
 ########################################################################################################################
@@ -63,6 +65,6 @@ engineName = 'Skuld'
 # Producer
 engineManufacturer = 'TUST'
 # Displayed System Diameter
-displayedSystemDiameter = 0.06  # m
+displayedSystemDiameter = 0.09  # m
 # Automatic Mass Calculation
 automaticMassCalculation = 0

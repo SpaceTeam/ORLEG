@@ -11,25 +11,25 @@ engine = Engine(parameters.name, parameters.fuelType, parameters.fuelTemperature
 
 diameter = 0.135
 
-oxTankVolume = 5.2e-3   # 5.2liter
+oxTankVolume = 5.7e-3   # 5.2liter
 oxTanklength = oxTankVolume / (math.pi * (diameter/2)**2)
 
-oxPressTankVolume = 3.2e-3   # 5.2liter
+oxPressTankVolume = 1.2e-3   # 5.2liter
 oxPressTanklength = oxPressTankVolume / (math.pi * (diameter/2)**2)
 
-fuelTankVolume = 4.0e-3		#4.0liter
+fuelTankVolume = 4.4e-3		#4.0liter
 fuelTankLength = fuelTankVolume / (math.pi * (diameter/2)**2)
 
-fuelPressTankVolume = 2.0e-3		#4.0liter
+fuelPressTankVolume = 0.8e-3		#4.0liter
 fuelPressTankLength = fuelPressTankVolume / (math.pi * (diameter/2)**2)
 
 
 engineBay = MassObject(mass=1.680, length=0.294, cg=0.150)
-oxTank = GasLiquidTank(tankVolume=oxTankVolume, tankLength=oxTanklength, tankMass=1.170, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='O2', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Aluminium
+oxTank = GasLiquidTank(tankVolume=oxTankVolume, tankLength=oxTanklength, tankMass=1.0, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='O2', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Aluminium
 #oxTank = GasLiquidTank(tankVolume=2400e-6, tankLength=0.387, tankMass=1.925, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Steel
 oxPress = MassObject(mass=0.55, length=0.095)
 oxPressTank = GasTank(tankVolume=oxPressTankVolume, tankLength=oxPressTanklength, tankMass=0.7, gasTemperature=parameters.oxidizerPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.oxidizerPressurantTankPressure)
-fuelTank = GasLiquidTank(tankVolume=fuelTankVolume, tankLength=fuelTankLength, tankMass=1.170, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.99, tankPressure=parameters.fuelTankPressure)  # Aluminium
+fuelTank = GasLiquidTank(tankVolume=fuelTankVolume, tankLength=fuelTankLength, tankMass=1.0, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.99, tankPressure=parameters.fuelTankPressure)  # Aluminium
 #fuelTank = GasLiquidTank(tankVolume=900e-6, tankLength=0.192, tankMass=0.876, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.5, tankPressure=parameters.fuelTankPressure)  # Steel
 fuelPress = MassObject(mass=0.16, length=0.072)
 fuelPressTank = GasTank(tankVolume=fuelPressTankVolume, tankLength=fuelPressTankLength, tankMass=0.7, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
@@ -84,8 +84,8 @@ for i in range(len(timestampList)):
 	massList.append(MassObject.calculateTotalMass(componentList))
 	cgList.append(propulsionSystemLength - MassObject.calculateTotalCG(componentList))
 
-	oxPressTankEmpty = oxPressTank.getTankPressure() < oxTank.getTankPressure()
-	fuelPressTankEmpty = fuelPressTank.getTankPressure() < fuelTank.getTankPressure()
+	oxPressTankEmpty = oxPressTank.getTankPressure() < (oxTank.getTankPressure() + parameters.oxidizerPressHeadPressure)
+	fuelPressTankEmpty = fuelPressTank.getTankPressure() < (fuelTank.getTankPressure() + parameters.fuelPressHeadPressure)
 
 	if burnedFuelMass < fuelMassToBurn or burnedOxMass < oxidizerMassToBurn or oxPressTankEmpty or fuelPressTankEmpty:
 		thrust = 0
