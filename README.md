@@ -7,16 +7,14 @@ ORLEG is a program/toolbox designed for simulating liquid (hybrid not implemente
 
 ## Usage
 
-### Requirement Management:
-This project uses the `pip-tools` requirements management workflow.
-If you want to introduce a new requirement to the project add its name to `requirements.in`, or `requirements-dev.in` if its only used for development.
-To add the added requirements to the `requirements*.txt` files run:
+### Installing:
+To install the required dependencies and Fortran compiler, run the install.sh script with:
 
-```pip-compile requirements.in && pip-compile requirements-dev.in```
+```sudo chmod +x install.sh```
 
-To install the added dependencies into the environment run:
+And then:
 
-```pip-sync requirements.txt && pip-sync requirements-dev.txt```
+```./install.sh```
 
 ### General:
 ORLEG.py is the main file where the model of the propulsion system is described an simulated using various classes for the system components.
