@@ -5,19 +5,20 @@ import orSimDataReader
 from Tanks import MassObject, GasLiquidTank, GasTank
 import orEngineFileWriter
 import math
+import matplotlib.pyplot as plt
 
 
 engine = Engine(parameters.name, parameters.fuelType, parameters.fuelTemperature, parameters.oxidizerType, parameters.oxidizerTemperature, parameters.oxidizerFuelRatio, parameters.chamberPressure, parameters.referenceAmbientPressure, parameters.referenceThrust, parameters.engineEfficiency, parameters.waterFraction)
 
-diameter = 0.123
+diameter = 0.130
 
-oxTankVolume = 5.2e-3   # 5.2liter
+oxTankVolume = 4.4e-3   # 5.2liter
 oxTanklength = oxTankVolume / (math.pi * (diameter/2)**2)
 
 oxPressTankVolume = 1.2e-3   # 5.2liter
 oxPressTanklength = oxPressTankVolume / (math.pi * (diameter/2)**2)
 
-fuelTankVolume = 5.5e-3		#4.0liter
+fuelTankVolume = 4.7e-3		#4.0liter
 fuelTankLength = fuelTankVolume / (math.pi * (diameter/2)**2)
 
 fuelPressTankVolume = 1.0e-3		#4.0liter
@@ -34,7 +35,7 @@ fuelTank = GasLiquidTank(tankVolume=fuelTankVolume, tankLength=fuelTankLength, t
 fuelPress = MassObject(mass=0.16, length=0.072)
 fuelPressTank = GasTank(tankVolume=fuelPressTankVolume, tankLength=fuelPressTankLength, tankMass=0.7, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
 
-componentList = [engineBay, oxTank, oxPress, oxPressTank, fuelTank, fuelPress, fuelPressTank]
+componentList = [engineBay, fuelTank, fuelPress, fuelPressTank, oxTank, oxPress, oxPressTank]
 
 propulsionSystemLength = MassObject.calculateTotalLength(componentList)
 dryMass = MassObject.calculateTotalDryMass(componentList)
@@ -55,6 +56,7 @@ print("    Pressurant mass: " + str(round(oxPressTank.gasMass + fuelPressTank.ga
 print("    Structural mass: " + str(round(MassObject.calculateTotalStructuralMass(componentList), 3)) + ' kg')
 print("    Dry mass: " + str(round(dryMass, 3)) + ' kg')
 print("    Wet mass: " + str(round(wetMass, 3)) + ' kg')
+print("    Propellant mass: " + str(round(wetMass-dryMass, 3)) + ' kg')
 print("    Length: " + str(round(propulsionSystemLength, 3)) + ' m')
 
 
@@ -109,3 +111,6 @@ if burnTime is None:
 	print("\nmax. burn time reached, remaining fuel mass: " + str(round(fuelTank.getLiquidMass() * 1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getLiquidMass() * 1000, 1)) + "g")
 
 orEngineFileWriter.writeEngineFile(burnTime, avgThrust, maxThrust, propulsionSystemLength, wetMass, dryMass, timestampList, cgList, thrustList, massList)
+
+plt.plot(timestampList, cgList)
+plt.show()

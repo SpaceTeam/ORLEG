@@ -44,11 +44,16 @@ def writeEngineFile(burnTime, averageThrust, maximumThrust, tankLength, wetMass,
 			'f="' + str(thrustList[n]) + '" ' + \
 			'm="' + str(massList[n] * 1000) + '" ' + \
 			't="' + str(timestampList[n]) + '"/>'
+		if timestampList[n] == burnTime:
+			break
+
+			
 	string += '\n      </data>'
 
 	string += '\n    </engine>' + \
 		'\n  </engine-list>' + \
 		'\n</engine-database>'
+
 
 	with open(parameters.engineFileName, "w") as file:
 		file.write(string)
