@@ -5,75 +5,26 @@ from param_types import CEAFuelType, CEAOxidizerType, CoolPropFluid
 import orSimDataReader
 from Tanks import MassObject, GasLiquidTank, GasTank
 import orEngineFileWriter
+import parseInput
 
+parser = parseInput.Parser("inputFiles/configMOCKUP.xml")
 
-engine = Engine(
-    parameters.name,
-    CEAFuelType(parameters.fuelType),
-    parameters.fuelTemperature,
-    CEAOxidizerType(parameters.oxidizerType),
-    parameters.oxidizerTemperature,
-    parameters.oxidizerFuelRatio,
-    parameters.chamberPressure,
-    parameters.referenceAmbientPressure,
-    parameters.referenceThrust,
-    parameters.engineEfficiency,
-    parameters.waterFraction,
-)
+engine = parser.generateEngine("fuelTank", "LOXTank")
 
-engineBay = MassObject(mass=1.680, length=0.294, cg=0.150)
-oxTank = GasLiquidTank(
-    tankVolume=2400e-6,
-    tankLength=0.387,
-    tankMass=1.170,
-    liquidType=CoolPropFluid(parameters.oxidizerType),
-    liquidTemperature=parameters.oxidizerTemperature,
-    gasType=CoolPropFluid("Nitrogen"),
-    gasTemperature=240,
-    fillLevel=0.95,
-    tankPressure=parameters.oxidizerTankPressure,
-)  # Aluminium
-# oxTank = GasLiquidTank(tankVolume=2400e-6, tankLength=0.387, tankMass=1.925, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Steel
-oxPress = MassObject(mass=0.55, length=0.095)
-oxPressTank = GasTank(
-    tankVolume=800e-6,
-    tankLength=0.196,
-    tankMass=0.7,
-    gasTemperature=parameters.oxidizerPressurantTemperature,
-    gasType=CoolPropFluid("Nitrogen"),
-    tankPressure=parameters.oxidizerPressurantTankPressure,
-)
-fuelTank = GasLiquidTank(
-    tankVolume=900e-6,
-    tankLength=0.192,
-    tankMass=0.594,
-    liquidType=CoolPropFluid(parameters.fuelType),
-    liquidTemperature=parameters.fuelTemperature,
-    gasType=CoolPropFluid("Nitrogen"),
-    gasTemperature=250,
-    fillLevel=0.99,
-    tankPressure=parameters.fuelTankPressure,
-)  # Aluminium
-# fuelTank = GasLiquidTank(tankVolume=900e-6, tankLength=0.192, tankMass=0.876, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.5, tankPressure=parameters.fuelTankPressure)  # Steel
-fuelPress = MassObject(mass=0.16, length=0.072)
-fuelPressTank = GasTank(
-    tankVolume=250e-6,
-    tankLength=0.2,
-    tankMass=0.34,
-    gasTemperature=parameters.fuelPressurantTemperature,
-    gasType=CoolPropFluid("Nitrogen"),
-    tankPressure=parameters.fuelPressurantTankPressure,
-)
+engineBay = parser.generateMassObject("massObject1")
 
-componentList = [
-    engineBay,
-    oxTank,
-    oxPress,
-    oxPressTank,
-    fuelTank,
-    fuelPress,
-    fuelPressTank,
-]
+oxTank = parser.generateLiquidTank("LOXTank")
+fuelTank = parser.generateLiquidTank("fuelTank")
+headerTank = parser.generateHeaderTank("headerTank")
+
+# ToDo: Parse Components into a list (lazy) or rewrte Mass calculation
+components = print(parser.getComponents())
+componentList = list()
+
+for component in components:
+    componentList.append(eval(component))
+
+print(componentList)
 
 propulsionSystemLength = MassObject.calculateTotalLength(componentList)
 dryMass = MassObject.calculateTotalDryMass(componentList)
@@ -94,7 +45,7 @@ print(
 		Fuel mass: {fuelTank.liquidMass:.3f} kg
 		Oxidizer density: {oxTank.liquidDensity:.1f} kg/m³
 		Fuel density: {fuelTank.liquidDensity:.1f} kg/m³
-		Pressurant mass: {oxPressTank.gasMass + fuelPressTank.gasMass + oxTank.gasMass + fuelTank.gasMass:.3f} kg
+		Pressurant mass: {headerTank.gasMass + headerTank.gasMass + oxTank.gasMass + fuelTank.gasMass:.3f} kg
 		Structural mass: {MassObject.calculateTotalStructuralMass(componentList):.3f} kg
 		Dry mass: {dryMass:.3f} kg
 		Wet mass: {wetMass:.3f} kg
@@ -127,12 +78,12 @@ for i in range(len(timestampList)):
     burnedFuelMass, flownPressurantMass = fuelTank.removeLiquidMassKeepTankPressure(
         fuelMassToBurn
     )
-    fuelPressTank.addGasMass(-flownPressurantMass)
+    headerTank.addGasMass(-flownPressurantMass)
     oxidizerMassToBurn = engine.oxMassFlowRate * timestep
     burnedOxMass, flownPressurantMass = oxTank.removeLiquidMassKeepTankPressure(
         oxidizerMassToBurn
     )
-    oxPressTank.addGasMass(-flownPressurantMass)
+    headerTank.addGasMass(-flownPressurantMass)
 
     massList.append(MassObject.calculateTotalMass(componentList))
     cgList.append(propulsionSystemLength - MassObject.calculateTotalCG(componentList))
