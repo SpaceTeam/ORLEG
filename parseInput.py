@@ -3,31 +3,10 @@ from Tanks import MassObject, GasLiquidTank, GasTank
 from param_types import CEAFuelType, CEAOxidizerType, CoolPropFluid
 from Engine import Engine
 
-#opening the xml file in read mode
-with open("inputFiles/configMOCKUP.xml","r") as xml_obj:
-    #coverting the xml data to Python dictionary
-    my_dict = xmltodict.parse(xml_obj.read())
-    #closing the file
-    xml_obj.close()
-
 class Parser(object):
     def __init__(self, filePath):
         self.filePath = filePath
         self.data = None
-
-        self.name = None
-        self.manufacturer = None
-        self.fuelType = None
-        self.oxidizerType = None
-        self.oxidizerFuelRatio = None
-        self.engineEfficiency = None
-        self.maxBurnDuration = None
-        self.referenceThrust = None
-        self.waterFraction = None
-        self.automaticMassCalculation = None
-
-        self.orData = None
-        self.orDataReductionFactor = None
 
         self.parse()
 
@@ -43,7 +22,7 @@ class Parser(object):
 
     def generateEngine(self, fuelTankName, oxidizerTankName):
         return Engine(
-            self.generalData["engineName"],
+            self.getEngineName(),
             CEAFuelType(self.generalData["fuelType"]),
             eval(self.componentData[fuelTankName]["liquidTemperature"]),
             CEAOxidizerType(self.generalData["oxidizerType"]),
@@ -86,5 +65,28 @@ class Parser(object):
         )
 
     def getComponents(self):
-        return self.componentData.keys()
+        return list(self.componentData.keys())
+
+    def getInputName(self):
+        return self.inputData["orDataFileName"]
+
+    def getReductionFactor(self):
+        return self.inputData["orDataReductionFactor"]
+
+    def getMaxBurnDuration(self):
+        return self.generalData["maxBurnDuration"]
+
+    def getEngineManufacturer(self):
+        return self.generalData["engineManufacturer"]
+
+    def getEngineName(self):
+        return self.generalData["engineName"]
     
+    def getDisplayedSystemDiameter(self):
+        return self.generalData["displayedSystemDiameter"]
+
+    def getAutomaticMassCalculation(self):
+        return self.generalData["automaticMassCalculation"]
+
+    def getEnginFilePath(self):
+        return "outputFiles/" + self.getEngineName() + ".rse"

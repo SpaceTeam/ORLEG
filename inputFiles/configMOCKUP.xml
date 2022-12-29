@@ -25,11 +25,11 @@
             <chamberPressure>15.0 * 1e5</chamberPressure>
             <referenceThrust>2000</referenceThrust>
         </engine>
-        <massObject1>
+        <engineBay>
             <mass>0.55</mass>
             <length>0.095</length>
-        </massObject1>
-        <LOXTank>
+        </engineBay>
+        <oxTank>
             <pressurantTank>headerTank</pressurantTank>
             <tankVolume>2400e-6</tankVolume>
             <tankLength>0.387</tankLength>
@@ -38,15 +38,15 @@
             <gasTemperature>240</gasTemperature>
             <fillLevel>0.95</fillLevel>
             <tankPressure>30 * 10 ** 5</tankPressure>
-        </LOXTank>
-        <headerTank>
+        </oxTank>
+        <pressurantTank>
             <tankVolume>800e-6</tankVolume>
             <tankLength>0.196</tankLength>
             <tankMass>0.7</tankMass>
             <gasTemperature>25 + 273.15</gasTemperature>
             <gasType>Nitrogen</gasType>
             <tankPressure>270 * 10**5</tankPressure>
-        </headerTank>
+        </pressurantTank>
         <fuelTank>
             <pressurantTank>headerTank</pressurantTank>
             <tankVolume>900e-6</tankVolume>
