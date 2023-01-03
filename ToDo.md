@@ -1,13 +1,16 @@
 # To Do File
 
-## orhelper Integration
-
-Automate the proccess of runnig the Flightsim.
-
+## Add LOX support
 
 ## parseInput.py
-Write a class that parses the ```config.xml``` into usable data.   
-Write a function which gets gets the componentList. This woud be the lazy way. Another option could be to rewrite the mass calculation functions.
+Add Rocket object, which gets filled which automatically gets filled with information from the input xml File. Add massCalc functionality from Orleg.py. After OpenRocket plugin, rewrite for new xml File.
+
+## ORLEG.py
+Rewrite so that it uses the Rocket Object and pretiffy the main Loop. Add functionality for single pressurant tank implementation.
+
+## Write Plugin
+
+Automate the proccess of runnig the Flightsim.
 
 ## Engine.py
 
@@ -16,8 +19,6 @@ Add docstring for:
     - getExhaustVelocity  
     - getThrust  
 
-## ORLEG.py
-Change code so that arbitruary tanks can be chained together with arbitruary header tanks. Add dynamic output filename based on the engine name.
 
 ## orSimDataReader.py
 
@@ -29,7 +30,4 @@ Add Docstrings
 
 ## orEngineFileWriter.py
 
-Unclusterfuck it
-## UI-based generator for config file
-
-Little helper UI for generating the ```config.xml```.
+Use xmlToDict for easier readability
