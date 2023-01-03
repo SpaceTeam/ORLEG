@@ -12,16 +12,14 @@ engineBay = parser.generateMassObject("engineBay")
 
 oxTank = parser.generateLiquidTank("oxTank")
 fuelTank = parser.generateLiquidTank("fuelTank")
-pressurantTank = parser.generateHeaderTank("pressurantTank")
+oxPressurantTank = parser.generatePressurantTank("oxPressurantTank")
+fuelPressurantTank = parser.generatePressurantTank("fuelPressurantTank")
 
-# ToDo: Parse Components into a list (lazy) or rewrite Mass calculation
-components = parser.getComponents()
 componentList = []
 
-for component in components:
-    componentList.append(eval(component))
-
-print(componentList)
+for component in parser.getComponents():
+    if component != "engine":
+        componentList.append(eval(component))
 
 propulsionSystemLength = MassObject.calculateTotalLength(componentList)
 dryMass = MassObject.calculateTotalDryMass(componentList)
@@ -42,7 +40,7 @@ print(
 		Fuel mass: {fuelTank.liquidMass:.3f} kg
 		Oxidizer density: {oxTank.liquidDensity:.1f} kg/m³
 		Fuel density: {fuelTank.liquidDensity:.1f} kg/m³
-		Pressurant mass: {pressurantTank.gasMass + pressurantTank.gasMass + oxTank.gasMass + fuelTank.gasMass:.3f} kg
+		Pressurant mass: {oxPressurantTank.gasMass + fuelPressurantTank.gasMass + oxTank.gasMass + fuelTank.gasMass:.3f} kg
 		Structural mass: {MassObject.calculateTotalStructuralMass(componentList):.3f} kg
 		Dry mass: {dryMass:.3f} kg
 		Wet mass: {wetMass:.3f} kg
@@ -53,8 +51,8 @@ print(
 
 timestampList, ambientPressureList, altitudeList = orSimDataReader.readORSimData(
     parser.getInputName(),
-    parser.getMaxBurnDuration(),
-    parser.getReductionFactor()
+    float(parser.getMaxBurnDuration()),
+    int(float(parser.getReductionFactor()))
 )
 
 burnTime = None
@@ -75,13 +73,13 @@ for i in range(len(timestampList)):
     burnedFuelMass, flownPressurantMass = fuelTank.removeLiquidMassKeepTankPressure(
         fuelMassToBurn
     )
-    pressurantTank.addGasMass(-flownPressurantMass)
+    fuelPressurantTank.addGasMass(-flownPressurantMass)
     
     oxidizerMassToBurn = engine.oxMassFlowRate * timestep
     burnedOxMass, flownPressurantMass = oxTank.removeLiquidMassKeepTankPressure(
         oxidizerMassToBurn
     )
-    pressurantTank.addGasMass(-flownPressurantMass)
+    oxPressurantTank.addGasMass(-flownPressurantMass)
 
     massList.append(MassObject.calculateTotalMass(componentList))
     cgList.append(propulsionSystemLength - MassObject.calculateTotalCG(componentList))
@@ -108,7 +106,7 @@ for i in range(len(timestampList)):
 avgThrust = thrustSum / thrustNum
 
 if burnTime is None:
-    burnTime = parser.getMaxBurnDuration()
+    burnTime = float(parser.getMaxBurnDuration())
     print(
         f"\nmax. burn time reached, remaining fuel mass:"
         f"{fuelTank.getLiquidMass() * 1000:.1f} g, "

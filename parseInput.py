@@ -27,32 +27,32 @@ class Parser(object):
             eval(self.componentData[fuelTankName]["liquidTemperature"]),
             CEAOxidizerType(self.generalData["oxidizerType"]),
             eval(self.componentData[oxidizerTankName]["liquidTemperature"]),
-            eval(self.generalData["oxidizerFuelRatio"]),
+            float(self.generalData["oxidizerFuelRatio"]),
             eval(self.engineData["chamberPressure"]),
             eval(self.generalData["referenceAmbientPressure"]),
-            eval(self.engineData["referenceThrust"]),
-            eval(self.generalData["engineEfficiency"]),
-            eval(self.generalData["waterFraction"])
+            float(self.engineData["referenceThrust"]),
+            float(self.generalData["engineEfficiency"]),
+            float(self.generalData["waterFraction"])
         )
 
     def generateLiquidTank(self, name):
         return GasLiquidTank(
             eval(self.componentData[name]["tankVolume"]),
-            eval(self.componentData[name]["tankLength"]),
-            eval(self.componentData[name]["tankMass"]),
-            CoolPropFluid(self.generalData["oxidizerType"]),
+            float(self.componentData[name]["tankLength"]),
+            float(self.componentData[name]["tankMass"]),
+            CoolPropFluid(self.generalData[self.componentData[name]["tankType"] + "Type"]),
             eval(self.componentData[name]["liquidTemperature"]),
             CoolPropFluid(self.componentData[self.componentData[name]["pressurantTank"]]["gasType"]),
             eval(self.componentData[name]["gasTemperature"]),
-            eval(self.componentData[name]["fillLevel"]),
+            float(self.componentData[name]["fillLevel"]),
             eval(self.componentData[name]["tankPressure"])
         )
     
-    def generateHeaderTank(self, name):
+    def generatePressurantTank(self, name):
         return GasTank(
             eval(self.componentData[name]["tankVolume"]),
-            eval(self.componentData[name]["tankLength"]),
-            eval(self.componentData[name]["tankMass"]),
+            float(self.componentData[name]["tankLength"]),
+            float(self.componentData[name]["tankMass"]),
             CoolPropFluid(str(self.componentData[name]["gasType"])),
             eval(self.componentData[name]["gasTemperature"]),
             eval(self.componentData[name]["tankPressure"])
@@ -60,8 +60,8 @@ class Parser(object):
 
     def generateMassObject(self, name):
         return MassObject(
-            eval(self.componentData[name]["mass"]),
-            eval(self.componentData[name]["length"])
+            float(self.componentData[name]["mass"]),
+            float(self.componentData[name]["length"])
         )
 
     def getComponents(self):
@@ -80,7 +80,7 @@ class Parser(object):
         return self.generalData["engineManufacturer"]
 
     def getEngineName(self):
-        return self.generalData["engineName"]
+        return str(self.generalData["engineName"])
     
     def getDisplayedSystemDiameter(self):
         return self.generalData["displayedSystemDiameter"]
@@ -88,5 +88,5 @@ class Parser(object):
     def getAutomaticMassCalculation(self):
         return self.generalData["automaticMassCalculation"]
 
-    def getEnginFilePath(self):
-        return "outputFiles/" + self.getEngineName() + ".rse"
+    def getEngineFilePath(self):
+        return str("outputFiles/" + self.getEngineName() + ".rse")

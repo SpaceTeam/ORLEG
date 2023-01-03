@@ -27,7 +27,7 @@ def writeEngineFile(
         + '" '
         + 'Type="Liquid" '
         + 'dia="'
-        + str(int(parser.getDisplayedSystemDiameter() * 1000))
+        + str(int(float(parser.getDisplayedSystemDiameter()) * 1000))
         + '" '
         + 'len="'
         + str(int(tankLength * 1000))
@@ -99,6 +99,6 @@ def writeEngineFile(
 
     string += "\n    </engine>" + "\n  </engine-list>" + "\n</engine-database>"
 
-    with open(parser.getEnginFilePath, "w") as file:
+    with open(parser.getEngineFilePath(), "w") as file:
         file.write(string)
     print("\nOpenRocket engine file generation complete")

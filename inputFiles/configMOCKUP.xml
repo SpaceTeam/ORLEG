@@ -30,28 +30,38 @@
             <length>0.095</length>
         </engineBay>
         <oxTank>
-            <pressurantTank>headerTank</pressurantTank>
-            <tankVolume>2400e-6</tankVolume>
-            <tankLength>0.387</tankLength>
-            <tankMass>1.170</tankMass>
+            <pressurantTank>oxPressurantTank</pressurantTank>
+            <tankType>oxidizer</tankType>
+            <tankVolume>4.4e-3</tankVolume>
+            <tankLength>0.3315</tankLength>
+            <tankMass>1.0</tankMass>
             <liquidTemperature>-50 + 273.15</liquidTemperature>
             <gasTemperature>240</gasTemperature>
             <fillLevel>0.95</fillLevel>
             <tankPressure>30 * 10 ** 5</tankPressure>
         </oxTank>
-        <pressurantTank>
-            <tankVolume>800e-6</tankVolume>
-            <tankLength>0.196</tankLength>
+        <oxPressurantTank>
+            <tankVolume>1.2e-3</tankVolume>
+            <tankLength>0.0904</tankLength>
             <tankMass>0.7</tankMass>
             <gasTemperature>25 + 273.15</gasTemperature>
             <gasType>Nitrogen</gasType>
             <tankPressure>270 * 10**5</tankPressure>
-        </pressurantTank>
+        </oxPressurantTank>
+        <fuelPressurantTank>
+            <tankVolume>1.0e-3</tankVolume>
+            <tankLength>0.07534</tankLength>
+            <tankMass>0.7</tankMass>
+            <gasTemperature>25 + 273.15</gasTemperature>
+            <gasType>Nitrogen</gasType>
+            <tankPressure>270 * 10**5</tankPressure>
+        </fuelPressurantTank>
         <fuelTank>
-            <pressurantTank>headerTank</pressurantTank>
-            <tankVolume>900e-6</tankVolume>
-            <tankLength>0.192</tankLength>
-            <tankMass>0.594</tankMass>
+            <pressurantTank>fuelPressurantTank</pressurantTank>
+            <tankType>fuel</tankType>
+            <tankVolume> 4.7e-3</tankVolume>
+            <tankLength>0.3541</tankLength>
+            <tankMass>1</tankMass>
             <liquidTemperature>20 + 273.15</liquidTemperature>
             <gasTemperature>250</gasTemperature>
             <fillLevel>0.99</fillLevel>
