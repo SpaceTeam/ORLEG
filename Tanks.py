@@ -113,9 +113,12 @@ class GasLiquidTank(MassObject):
         self.liquidTemperature = liquidTemperature
         self.gasType = gasType
         self.gasTemperature = gasTemperature
-        self.liquidDensity = PropsSI(
-            "D", "P", tankPressure, "T", self.liquidTemperature, self.liquidType.value
-        )
+        if self.liquidType.value == "LOX":      # FIXME: Hack to make it work with LOX
+            self.liquidDensity = 1140
+        else:
+            self.liquidDensity = PropsSI(
+                "D", "P", tankPressure, "T", self.liquidTemperature, self.liquidType.value
+            )
 
         # dynamic values
         self.liquidMass = self.tankVolume * fillLevel * self.liquidDensity

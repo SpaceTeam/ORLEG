@@ -4,7 +4,7 @@
         <engineName>Skuld</engineName>
         <engineManufacturer>TUST</engineManufacturer>
         <fuelType>Ethanol</fuelType>
-        <oxidizerType>N2O</oxidizerType>
+        <oxidizerType>LOX</oxidizerType>
         <oxidizerFuelRatio>1.3</oxidizerFuelRatio>
         <engineEfficiency>0.80</engineEfficiency>
         <maxBurnDuration>20.0</maxBurnDuration>

@@ -57,7 +57,7 @@ class Engine(object):
 
         self.add_fuel_to_cea_if_custom()
         self.set_fuelcard_for_temperature()
-        self.set_oxcard_for_temperature()
+        #self.set_oxcard_for_temperature()
         self.set_cea()
         self.calc_params()
 
@@ -111,7 +111,7 @@ class Engine(object):
             T=536.7, Q=0
         )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
         fuel = EC_Fluid(symbol=self.fuelType.value)
-        fuel.setProps(T=self.fuelTemperature * 9 / 5, Q=0)
+        fuel.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0) # Why are we doing this? And wrongly at that
         dT = fuel.T - fuelStd.T
         dH = fuel.H - fuelStd.H
         CpAve = abs(dH / dT)
@@ -128,15 +128,18 @@ class Engine(object):
 
         See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
         """
+        
         oxidizerStd = EC_Fluid(symbol=self.oxidizerType.value)
         oxidizerStd.setProps(
             T=536.7, Q=0
         )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
         oxidizer = EC_Fluid(symbol=self.oxidizerType.value)
-        oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0)
+        oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0) # Why are we doing this? And wrongly at that
+
         dT = oxidizer.T - oxidizerStd.T
         dH = oxidizer.H - oxidizerStd.H
         CpAve = abs(dH / dT)
+
         self.oxidizerCard = makeCardForNewTemperature(
             ceaName=self.oxidizerType.value,
             newTdegR=oxidizer.T,
@@ -149,7 +152,7 @@ class Engine(object):
         and store it in self.cea
         """
         self.cea = CEA_Obj(
-            oxName=self.oxidizerCard,
+            oxName=self.oxidizerType.value,     #Fixme: use self.oxidizerCard
             fuelName=self.fuelCard,
             useFastLookup=0,
             makeOutput=0,
@@ -171,7 +174,7 @@ class Engine(object):
         ------------------------
             Name: {self.name}
             fuelType: {self.fuelType.value}
-            oxidizerType: {self.oxidizerType.value}")
+            oxidizerType: {self.oxidizerType.value}
             oxidizerFuelRatio: {self.oxidizerFuelRatio}
             chamberPressure: {self.chamberPressure / 1e5} bar
             referenceThrust: {self.referenceThrust} N

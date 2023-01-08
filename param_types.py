@@ -30,6 +30,7 @@ class CoolPropFluid(Enum):
     Ethanol = "Ethanol"
     N2O = "N2O"
     Water = "Water"
+    LOX = "LOX"
 
 
 class CEAFuelType(Enum):
@@ -46,6 +47,7 @@ class CEAOxidizerType(Enum):
     """
 
     N2O = "N2O"
+    LOX = "LOX"
 
 
 class TKelvin(float):
