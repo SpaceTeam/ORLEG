@@ -35,7 +35,7 @@
             <tankVolume>4.4e-3</tankVolume>
             <tankLength>0.3315</tankLength>
             <tankMass>1.0</tankMass>
-            <liquidTemperature>-50 + 273.15</liquidTemperature>
+            <liquidTemperature>-200 + 273.15</liquidTemperature>
             <gasTemperature>240</gasTemperature>
             <fillLevel>0.95</fillLevel>
             <tankPressure>30 * 10 ** 5</tankPressure>

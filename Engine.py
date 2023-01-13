@@ -7,6 +7,7 @@ from param_types import (
     PPascal,
     FNewton,
     CustomFuels,
+    CoolPropFluid
 )
 
 from engcoolprop.ec_fluid import EC_Fluid
@@ -57,7 +58,7 @@ class Engine(object):
 
         self.add_fuel_to_cea_if_custom()
         self.set_fuelcard_for_temperature()
-        #self.set_oxcard_for_temperature()
+        self.set_oxcard_for_temperature()
         self.set_cea()
         self.calc_params()
 
@@ -102,7 +103,8 @@ class Engine(object):
 
     def set_fuelcard_for_temperature(self):
         """Generate new fuel card for the given fuel temperature.
-        Store it in self.fuelCard
+        Store it in self.fuelCard.
+        setProps() uses degR (Rankine Scale)
 
         See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
         """
@@ -111,7 +113,7 @@ class Engine(object):
             T=536.7, Q=0
         )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
         fuel = EC_Fluid(symbol=self.fuelType.value)
-        fuel.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0) # Why are we doing this? And wrongly at that
+        fuel.setProps(T=self.fuelTemperature  * 9 / 5, Q=0) # Why are we doing this? And wrongly at that
         dT = fuel.T - fuelStd.T
         dH = fuel.H - fuelStd.H
         CpAve = abs(dH / dT)
@@ -124,16 +126,22 @@ class Engine(object):
 
     def set_oxcard_for_temperature(self):
         """Generate new oxidizer card for the given ox temperature.
-        Store it in self.oxidizerCard
+        Store it in self.oxidizerCard.
+        setProps() uses degR (Rankine Scale)
 
         See https://rocketcea.readthedocs.io/en/latest/temperature_adjust.html
         """
-        
-        oxidizerStd = EC_Fluid(symbol=self.oxidizerType.value)
-        oxidizerStd.setProps(
-            T=536.7, Q=0
-        )  # FIXME only correct for liquid storable fluids, others use boiling point as std temp
-        oxidizer = EC_Fluid(symbol=self.oxidizerType.value)
+        oxidizerStd = EC_Fluid(symbol=CoolPropFluid[str(self.oxidizerType.value)].value)
+        # FIXME only correct for liquid storable fluids and LOX, others use boiling point as std temp
+        if self.oxidizerType.value == "LOX":
+            oxidizerStd.setProps(
+                T=162.342, Q=0
+            )
+        else:
+            oxidizerStd.setProps(
+                T=536.7, Q=0
+            )
+        oxidizer = EC_Fluid(symbol=CoolPropFluid[str(self.oxidizerType.value)].value)
         oxidizer.setProps(T=self.oxidizerTemperature * 9 / 5, Q=0) # Why are we doing this? And wrongly at that
 
         dT = oxidizer.T - oxidizerStd.T
@@ -152,7 +160,7 @@ class Engine(object):
         and store it in self.cea
         """
         self.cea = CEA_Obj(
-            oxName=self.oxidizerType.value,     #Fixme: use self.oxidizerCard
+            oxName=self.oxidizerCard,
             fuelName=self.fuelCard,
             useFastLookup=0,
             makeOutput=0,
