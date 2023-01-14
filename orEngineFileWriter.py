@@ -1,4 +1,6 @@
-from inputFiles import parameters
+import parseInput
+
+parser = parseInput.Parser("inputFiles/configMOCKUP.xml")
 
 
 def writeEngineFile(
@@ -18,14 +20,14 @@ def writeEngineFile(
         + "\n  <engine-list>"
         + "\n    <engine  "
         + 'mfg="'
-        + str(parameters.engineManufacturer)
+        + str(parser.getEngineManufacturer())
         + '" '
         + 'code="'
-        + str(parameters.engineName)
+        + str(parser.getEngineName())
         + '" '
         + 'Type="Liquid" '
         + 'dia="'
-        + str(int(parameters.displayedSystemDiameter * 1000))
+        + str(int(float(parser.getDisplayedSystemDiameter()) * 1000))
         + '" '
         + 'len="'
         + str(int(tankLength * 1000))
@@ -38,7 +40,7 @@ def writeEngineFile(
         + '" '
         + 'delays="0" '
         + 'auto-calc-mass="'
-        + str(parameters.automaticMassCalculation)
+        + str(parser.getAutomaticMassCalculation())
         + '" '
         + 'auto-calc-cg="0" '
         + 'avgThrust="'
@@ -97,6 +99,6 @@ def writeEngineFile(
 
     string += "\n    </engine>" + "\n  </engine-list>" + "\n</engine-database>"
 
-    with open(parameters.engineFileName, "w") as file:
+    with open(parser.getEngineFilePath(), "w") as file:
         file.write(string)
     print("\nOpenRocket engine file generation complete")

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rocket>
+    <general>
+        <engineName>Skuld</engineName>
+        <engineManufacturer>TUST</engineManufacturer>
+        <fuelType>Ethanol</fuelType>
+        <oxidizerType>LOX</oxidizerType>
+        <oxidizerFuelRatio>1.3</oxidizerFuelRatio>
+        <engineEfficiency>0.80</engineEfficiency>
+        <maxBurnDuration>20.0</maxBurnDuration>
+        <displayedSystemDiameter>0.09</displayedSystemDiameter>
+        <waterFraction>0.0</waterFraction>
+        <automaticMassCalculation>0</automaticMassCalculation>
+        <referenceAmbientPressure>1.0 * 1e5</referenceAmbientPressure>
+    </general>
+    <inputData>
+        <orDataFileName>inputFiles/pressuredata.csv</orDataFileName>
+        <orDataReductionFactor>1.0</orDataReductionFactor>
+    </inputData>
+    <components>
+        <engine>
+            <mass>1.680</mass>
+            <length>0.294</length>
+            <cg>0.150</cg>
+            <chamberPressure>15.0 * 1e5</chamberPressure>
+            <referenceThrust>2000</referenceThrust>
+        </engine>
+        <engineBay>
+            <mass>0.55</mass>
+            <length>0.095</length>
+        </engineBay>
+        <oxTank>
+            <pressurantTank>oxPressurantTank</pressurantTank>
+            <tankType>oxidizer</tankType>
+            <tankVolume>4.4e-3</tankVolume>
+            <tankLength>0.3315</tankLength>
+            <tankMass>1.0</tankMass>
+            <liquidTemperature>-200 + 273.15</liquidTemperature>
+            <gasTemperature>240</gasTemperature>
+            <fillLevel>0.95</fillLevel>
+            <tankPressure>30 * 10 ** 5</tankPressure>
+        </oxTank>
+        <oxPressurantTank>
+            <tankVolume>1.2e-3</tankVolume>
+            <tankLength>0.0904</tankLength>
+            <tankMass>0.7</tankMass>
+            <gasTemperature>25 + 273.15</gasTemperature>
+            <gasType>Nitrogen</gasType>
+            <tankPressure>270 * 10**5</tankPressure>
+        </oxPressurantTank>
+        <fuelPressurantTank>
+            <tankVolume>1.0e-3</tankVolume>
+            <tankLength>0.07534</tankLength>
+            <tankMass>0.7</tankMass>
+            <gasTemperature>25 + 273.15</gasTemperature>
+            <gasType>Nitrogen</gasType>
+            <tankPressure>270 * 10**5</tankPressure>
+        </fuelPressurantTank>
+        <fuelTank>
+            <pressurantTank>fuelPressurantTank</pressurantTank>
+            <tankType>fuel</tankType>
+            <tankVolume> 4.7e-3</tankVolume>
+            <tankLength>0.3541</tankLength>
+            <tankMass>1</tankMass>
+            <liquidTemperature>20 + 273.15</liquidTemperature>
+            <gasTemperature>250</gasTemperature>
+            <fillLevel>0.99</fillLevel>
+            <tankPressure>30 * 10 ** 5</tankPressure>
+        </fuelTank>
+    </components>
+</rocket>
