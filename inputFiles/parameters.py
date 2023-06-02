@@ -1,3 +1,4 @@
+
 ########################################################################################################################
 # Engine Design Input Parameters
 ########################################################################################################################
@@ -59,9 +60,12 @@ orDataReductionFactor = 1
 ########################################################################################################################
 
 # Output File Name
-engineFileName = 'outputFiles/Skuld.rse'
+engineFileName = 'outputFiles/Skuld_oxfuel_'+str(oxidizerFuelRatio) + '.rse'
+
+massflowFileName = 'outputFiles/massflow_'
+
 # Rocket Engine Name
-engineName = 'Skuld'
+engineName = 'Skuld_oxfuel_'+str(oxidizerFuelRatio)
 # Producer
 engineManufacturer = 'TUST'
 # Displayed System Diameter

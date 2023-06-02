@@ -1,6 +1,22 @@
 from inputFiles import parameters
 
 
+def writeMassflowFile(postfix, burnTime, timestampList, mass):
+	string = ""
+
+	for n, i in enumerate(timestampList):
+		string += '\n' + str(timestampList[n]) + ', ' + str(mass[n]) + ' '
+
+		if timestampList[n] == burnTime:
+			break
+
+
+
+	with open(parameters.massflowFileName + postfix + ".csv", "w") as file:
+		file.write(string)
+
+
+
 def writeEngineFile(burnTime, averageThrust, maximumThrust, tankLength, wetMass, dryMass, timestampList, cgList, thrustList, massList):
 	string = '<engine-database>' + \
 		'\n  <engine-list>' + \

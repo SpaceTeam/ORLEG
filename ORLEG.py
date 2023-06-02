@@ -12,28 +12,34 @@ engine = Engine(parameters.name, parameters.fuelType, parameters.fuelTemperature
 
 diameter = 0.130
 
-oxTankVolume = 4.4e-3   # 5.2liter
+oxTankVolume = 4.4e-3			   # e-3m^3  ... liter
 oxTanklength = oxTankVolume / (math.pi * (diameter/2)**2)
 
-oxPressTankVolume = 1.2e-3   # 5.2liter
-oxPressTanklength = oxPressTankVolume / (math.pi * (diameter/2)**2)
+#oxPressTankVolume = 1.1e-3   # 5.2liter
+#oxPressTanklength = oxPressTankVolume / (math.pi * (diameter/2)**2)
+oxPressTankVolume = 1.1e-3  		# e-3m^3  ... liter
+oxPressTanklength = 0.279
+oxPressTankMass = 0.65
 
-fuelTankVolume = 4.7e-3		#4.0liter
+fuelTankVolume = 4.7e-3				# e-3m^3  ... liter
 fuelTankLength = fuelTankVolume / (math.pi * (diameter/2)**2)
 
-fuelPressTankVolume = 1.0e-3		#4.0liter
-fuelPressTankLength = fuelPressTankVolume / (math.pi * (diameter/2)**2)
+#fuelPressTankVolume = 1.0e-3		#4.0liter
+#fuelPressTankLength = fuelPressTankVolume / (math.pi * (diameter/2)**2)
 
+fuelPressTankVolume = 1.1e-3		# e-3m^3  ... liter
+fuelPressTankLength = 0.279
+fuelPressTankMass = 0.65
 
 engineBay = MassObject(mass=1.680, length=0.294, cg=0.150)
 oxTank = GasLiquidTank(tankVolume=oxTankVolume, tankLength=oxTanklength, tankMass=1.0, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='O2', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Aluminium
 #oxTank = GasLiquidTank(tankVolume=2400e-6, tankLength=0.387, tankMass=1.925, liquidType=parameters.oxidizerType, liquidTemperature=parameters.oxidizerTemperature, gasType='Nitrogen', gasTemperature=240, fillLevel=0.95, tankPressure=parameters.oxidizerTankPressure)  # Steel
-oxPress = MassObject(mass=0.55, length=0.095)
-oxPressTank = GasTank(tankVolume=oxPressTankVolume, tankLength=oxPressTanklength, tankMass=0.7, gasTemperature=parameters.oxidizerPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.oxidizerPressurantTankPressure)
+oxPress = MassObject(mass=0.6, length=0.1)
+oxPressTank = GasTank(tankVolume=oxPressTankVolume, tankLength=oxPressTanklength, tankMass=oxPressTankMass, gasTemperature=parameters.oxidizerPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.oxidizerPressurantTankPressure)
 fuelTank = GasLiquidTank(tankVolume=fuelTankVolume, tankLength=fuelTankLength, tankMass=1.0, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.99, tankPressure=parameters.fuelTankPressure)  # Aluminium
 #fuelTank = GasLiquidTank(tankVolume=900e-6, tankLength=0.192, tankMass=0.876, liquidType=parameters.fuelType, liquidTemperature=parameters.fuelTemperature, gasType='Nitrogen', gasTemperature=250, fillLevel=0.5, tankPressure=parameters.fuelTankPressure)  # Steel
-fuelPress = MassObject(mass=0.16, length=0.072)
-fuelPressTank = GasTank(tankVolume=fuelPressTankVolume, tankLength=fuelPressTankLength, tankMass=0.7, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
+fuelPress = MassObject(mass=0.6, length=0.1)
+fuelPressTank = GasTank(tankVolume=fuelPressTankVolume, tankLength=fuelPressTankLength, tankMass=fuelPressTankMass, gasTemperature=parameters.fuelPressurantTemperature, gasType='Nitrogen', tankPressure=parameters.fuelPressurantTankPressure)
 
 componentList = [engineBay, fuelTank, fuelPress, fuelPressTank, oxTank, oxPress, oxPressTank]
 
@@ -64,6 +70,13 @@ timestampList, ambientPressureList, altitudeList = orSimDataReader.readORSimData
 
 burnTime = None
 thrustList = []
+
+oxpressMassList = []
+oxMassList = []
+fuelpressMassList = []
+fuelMassList = []
+
+
 thrustSum = 0
 thrustNum = 0
 maxThrust = 0
@@ -79,9 +92,17 @@ for i in range(len(timestampList)):
 	fuelMassToBurn = engine.fuelMassFlowRate * timestep
 	burnedFuelMass, flownPressurantMass = fuelTank.removeLiquidMassKeepTankPressure(fuelMassToBurn)
 	fuelPressTank.addGasMass(-flownPressurantMass)
+
+	fuelpressMassList.append(flownPressurantMass)
+	fuelMassList.append(burnedFuelMass)
+
 	oxidizerMassToBurn = engine.oxMassFlowRate * timestep
 	burnedOxMass, flownPressurantMass = oxTank.removeLiquidMassKeepTankPressure(oxidizerMassToBurn)
 	oxPressTank.addGasMass(-flownPressurantMass)
+
+	oxpressMassList.append(flownPressurantMass)
+	oxMassList.append(burnedFuelMass)
+
 
 	massList.append(MassObject.calculateTotalMass(componentList))
 	cgList.append(propulsionSystemLength - MassObject.calculateTotalCG(componentList))
@@ -109,6 +130,34 @@ avgThrust = thrustSum / thrustNum
 if burnTime is None:
 	burnTime = parameters.maxBurnDuration
 	print("\nmax. burn time reached, remaining fuel mass: " + str(round(fuelTank.getLiquidMass() * 1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getLiquidMass() * 1000, 1)) + "g")
+
+timestampList.pop()
+oxpressMassList.pop()
+oxMassList.pop()
+fuelpressMassList.pop()
+fuelMassList.pop()
+massList.pop()
+cgList.pop()
+thrustList.pop()
+
+plt.plot(timestampList, oxpressMassList)
+plt.plot(timestampList, oxMassList)
+plt.show()
+plt.plot(timestampList, fuelpressMassList)
+plt.plot(timestampList, fuelMassList)
+plt.show()
+
+plt.plot(timestampList, thrustList)
+plt.show()
+plt.plot(timestampList, massList)
+plt.show()
+
+orEngineFileWriter.writeMassflowFile('ox_pressurant', burnTime, timestampList, oxpressMassList)
+orEngineFileWriter.writeMassflowFile('ox', burnTime, timestampList, oxMassList)
+orEngineFileWriter.writeMassflowFile('fuel_pressurant', burnTime, timestampList, fuelpressMassList)
+orEngineFileWriter.writeMassflowFile('fuel', burnTime, timestampList, fuelMassList)
+
+orEngineFileWriter.writeMassflowFile('thrust', burnTime, timestampList, thrustList)
 
 orEngineFileWriter.writeEngineFile(burnTime, avgThrust, maxThrust, propulsionSystemLength, wetMass, dryMass, timestampList, cgList, thrustList, massList)
 
