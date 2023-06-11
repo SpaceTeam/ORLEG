@@ -14,7 +14,7 @@ diameter = 0.130
 
 oxTankVolume = 4.4e-3			   # e-3m^3  ... liter
 oxTanklength = oxTankVolume / (math.pi * (diameter/2)**2)
-
+print("oxTanklength: " + str(oxTanklength) + "m")
 #oxPressTankVolume = 1.1e-3   # 5.2liter
 #oxPressTanklength = oxPressTankVolume / (math.pi * (diameter/2)**2)
 oxPressTankVolume = 1.1e-3  		# e-3m^3  ... liter
@@ -23,6 +23,7 @@ oxPressTankMass = 0.65
 
 fuelTankVolume = 4.7e-3				# e-3m^3  ... liter
 fuelTankLength = fuelTankVolume / (math.pi * (diameter/2)**2)
+print("fuelTankLength: " + str(fuelTankLength) + "m")
 
 #fuelPressTankVolume = 1.0e-3		#4.0liter
 #fuelPressTankLength = fuelPressTankVolume / (math.pi * (diameter/2)**2)
@@ -54,11 +55,14 @@ engine.printParameters()
 print("    fuelVolumeFlow: " + str(round(fuelVolumeFlowRate * 1e6, 1)) + " ml/s")
 print("    oxidizerVolumeFlow: " + str(round(oxidizerVolumeFlowRate * 1e6, 1)) + " ml/s")
 print("Propulsion System Parameters:")
+print("    Ox Pressurant mass: " + str(round(oxPressTank.gasMass, 3)) + ' kg')
+print("    Ox Pressurant Gas mass: " + str(round(oxTank.gasMass, 3)) + ' kg')
 print("    Oxidizer mass: " + str(round(oxTank.liquidMass, 3)) + ' kg')
+print("    Fuel Pressurant mass: " + str(round(fuelPressTank.gasMass, 3)) + ' kg')
+print("    Fuel Pressurant Gas mass: " + str(round(fuelTank.gasMass, 3)) + ' kg')
 print("    Fuel mass: " + str(round(fuelTank.liquidMass, 3)) + ' kg')
 print("    Oxidizer density: " + str(round(oxTank.liquidDensity, 1)) + ' kg/m³')
 print("    Fuel density: " + str(round(fuelTank.liquidDensity, 1)) + ' kg/m³')
-print("    Pressurant mass: " + str(round(oxPressTank.gasMass + fuelPressTank.gasMass + oxTank.gasMass + fuelTank.gasMass, 3)) + ' kg')
 print("    Structural mass: " + str(round(MassObject.calculateTotalStructuralMass(componentList), 3)) + ' kg')
 print("    Dry mass: " + str(round(dryMass, 3)) + ' kg')
 print("    Wet mass: " + str(round(wetMass, 3)) + ' kg')
@@ -76,6 +80,7 @@ oxMassList = []
 fuelpressMassList = []
 fuelMassList = []
 
+index_of_end = 0
 
 thrustSum = 0
 thrustNum = 0
@@ -93,15 +98,15 @@ for i in range(len(timestampList)):
 	burnedFuelMass, flownPressurantMass = fuelTank.removeLiquidMassKeepTankPressure(fuelMassToBurn)
 	fuelPressTank.addGasMass(-flownPressurantMass)
 
-	fuelpressMassList.append(flownPressurantMass)
-	fuelMassList.append(burnedFuelMass)
+	fuelpressMassList.append(flownPressurantMass/timestep)
+	fuelMassList.append(burnedFuelMass/timestep)
 
 	oxidizerMassToBurn = engine.oxMassFlowRate * timestep
 	burnedOxMass, flownPressurantMass = oxTank.removeLiquidMassKeepTankPressure(oxidizerMassToBurn)
 	oxPressTank.addGasMass(-flownPressurantMass)
 
-	oxpressMassList.append(flownPressurantMass)
-	oxMassList.append(burnedFuelMass)
+	oxpressMassList.append(flownPressurantMass/timestep)
+	oxMassList.append(burnedFuelMass/timestep)
 
 
 	massList.append(MassObject.calculateTotalMass(componentList))
@@ -114,6 +119,7 @@ for i in range(len(timestampList)):
 		thrust = 0
 		if burnTime is None:			
 			burnTime = timestampList[i]
+			index_of_end = i - 1
 			ox_press_string = "oxPressTank pressure: " + str(round(oxPressTank.getTankPressure() * 1e-5, 1)) + "bar" if not oxPressTankEmpty else "oxPressTank pressure: empty"
 			fuel_press_string = "fuelPressTank pressure: " + str(round(fuelPressTank.getTankPressure() * 1e-5, 1)) + "bar" if not fuelPressTankEmpty else "fuelPressTank pressure: empty"
 			print("\nburnout at t=" + str(round(burnTime, 2)) + ", remaining fuel mass: " + str(round(fuelTank.getLiquidMass() * 1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getLiquidMass() * 1000, 1)) + "g, " + ox_press_string + ", " + fuel_press_string)
@@ -131,14 +137,24 @@ if burnTime is None:
 	burnTime = parameters.maxBurnDuration
 	print("\nmax. burn time reached, remaining fuel mass: " + str(round(fuelTank.getLiquidMass() * 1000, 1)) + "g, remaining oxidizer mass: " + str(round(oxTank.getLiquidMass() * 1000, 1)) + "g")
 
-timestampList.pop()
-oxpressMassList.pop()
-oxMassList.pop()
-fuelpressMassList.pop()
-fuelMassList.pop()
-massList.pop()
-cgList.pop()
-thrustList.pop()
+del timestampList[index_of_end:]
+del oxpressMassList[index_of_end:]
+del oxMassList[index_of_end:]
+del fuelpressMassList[index_of_end:]
+del fuelMassList[index_of_end:]
+del massList[index_of_end:]
+del cgList[index_of_end:]
+del thrustList[index_of_end:]
+
+
+del timestampList[:1]
+del oxpressMassList[:1]
+del oxMassList[:1]
+del fuelpressMassList[:1]
+del fuelMassList[:1]
+del massList[:1]
+del cgList[:1]
+del thrustList[:1]
 
 plt.plot(timestampList, oxpressMassList)
 plt.plot(timestampList, oxMassList)
